@@ -20,7 +20,10 @@ public class MaybeMutator implements IMutation {
         Genotype newBitSet = genotypes.makeCopy();
 
         if(random.nextDouble() < chance) {
-            newBitSet.getData().flip(random.nextInt(genotypes.getFixedLength()));
+            byte[] next = new byte[1];
+            random.nextBytes(next);
+            int randomPos = random.nextInt(genotypes.getActualData().length);
+            System.arraycopy(next, 0, newBitSet.getActualData(), randomPos, 1);
         }
 
         return newBitSet;

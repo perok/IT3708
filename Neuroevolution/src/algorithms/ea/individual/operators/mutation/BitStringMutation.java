@@ -19,7 +19,7 @@ public class BitStringMutation implements IMutation {
         Genotype newBitSet = genotypes.makeCopy();
         double chance = 1 / (double)newBitSet.getFixedLength();
         for (int i = 0; i < newBitSet.getFixedLength(); i++) {
-            if(random.nextDouble() < chance) newBitSet.getData().flip(i);
+            if(random.nextDouble() < chance) newBitSet.getBitSetData().flip(i);
         }
 
         return newBitSet;

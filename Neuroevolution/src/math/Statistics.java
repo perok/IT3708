@@ -8,13 +8,13 @@ import java.util.List;
  * Created by Perÿyvind on 10/03/2015.
  */
 public class Statistics {
-    public static double populationMean(List<Individual> population) {
+    public static double populationMean(List<? extends Individual> population) {
         return population.stream()
                 .mapToDouble(Individual::getFitness)
                 .sum() / population.size();
     }
 
-    public static double standardDeviationPopulation(List<Individual> population){
+    public static double standardDeviationPopulation(List<? extends Individual> population){
         double mean = populationMean(population);
         double SD = population.stream()
                 .mapToDouble(Individual::getFitness)

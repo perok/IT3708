@@ -6,6 +6,8 @@ import java.util.stream.IntStream;
 
 /**
  * Created by Perÿyvind on 13/04/2015.
+ *
+ * Standard FeedForward Neural Net
  */
 public class NeuralNet {
     int numInputs;
@@ -15,13 +17,17 @@ public class NeuralNet {
 
     List<NeuronLayer> neuronLayers;
 
-    public NeuralNet(){
+    public NeuralNet(int numInputs, int numOutputs, int numHiddenLayers, int neuronsPerHiddenLayer){
+        this.numInputs = numInputs;
+        this.numOutputs = numOutputs;
+        this.numHiddenLayers = numHiddenLayers;
+        this.neuronsPerHiddenLayer = neuronsPerHiddenLayer;
+
+        createNet();
     }
 
-    public void createNet() {
-
+    private void createNet() {
         neuronLayers = new LinkedList<>();
-
 
         if(numHiddenLayers > 0) {
             // Add first hidden layer connected from input layer
@@ -41,10 +47,46 @@ public class NeuralNet {
     }
 
 
-    // getWe
+    public List<Double> getWeights() {
+        //this will hold the weights
+        List<Double> weights = new LinkedList<>();
 
-    // set weights
+        //each layer
+        for (int i=0; i < numHiddenLayers + 1; ++i){
 
+            NeuronLayer nl = neuronLayers.get(i);
+            //each neuron
+            for (int j = 0; j < nl.neurons.size(); ++j) {
+
+                Neuron neuron = nl.getNeurons().get(j);
+                //for each weight
+                for (int k=0; k < neuron.numberOfInputs; ++k) {
+                    weights.add(neuron.getWeight(k));
+                }
+            }
+        }
+
+        return weights;
+    }
+
+    public void setWeights(List<Double> weights) {
+
+        int cWeight = 0;
+
+        //each layer
+        for (int i=0; i < numHiddenLayers + 1; ++i) {
+            NeuronLayer nl = neuronLayers.get(i);
+            //each neuron
+            for (int j = 0; j < nl.neurons.size(); ++j) {
+                Neuron neuron = nl.getNeurons().get(j);
+                //for each weight
+                for (int k=0; k < neuron.numberOfInputs; ++k) {
+                    // todo wtf har jeg tenkt her?
+                    weights.add(neuron.setWeight(k, weights.get(cWeight++)));
+                }
+            }
+        }
+    }
 
     /**
      * Basicly execute
@@ -54,7 +96,6 @@ public class NeuralNet {
     public List<Double> update(List<Double> inputs) {
         // The results
         List<Double> outputs = new LinkedList<>();
-
 
         int cWeight;
 

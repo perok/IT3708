@@ -1,9 +1,9 @@
 package algorithms.ea.individual;
 
-import algorithms.ea.Evolution;
-import algorithms.ea.fitness.EvaluateFitness;
-import algorithms.ea.fitness.IFitness;
-import algorithms.ea.individual.builders.PhenotypeBuilder;
+import algorithms.ea.individual.operators.GeneticOperator;
+import algorithms.ea.individual.operators.mutation.IMutation;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 
 import java.util.List;
 import java.util.StringJoiner;
@@ -12,59 +12,77 @@ import java.util.stream.Collector;
 /**
  * Created by Perÿyvind on 05/03/2015.
  */
-public class Individual implements Comparable<Individual>{
-    /**
-     * The main Evolutionary algorithm controller.
-     * Contains the fitness functions and other data.
-     */
-    private Evolution parent;
+public class Individual<T> implements Comparable<Individual>{
 
-    private List<IPhenotype> phenotypes;
-    private Genotype genotypes;
+    // Unique id
+    private static int idCounter = 0;
+    private SimpleIntegerProperty id;
 
-    private double individualFitness;
+    protected List<T> phenotypes;
+    protected Genotype genotypes;
+
+    SimpleDoubleProperty fitness;
+    //private double fitness;
 
     /**
      * Generation of the individual
      */
-    private int age = 0;
+    private SimpleIntegerProperty age;
 
-    public Individual(Evolution parent, Genotype data, int age){
-        this(parent, data);
-        this.age = age;
+
+    public Individual(){
+        age = new SimpleIntegerProperty(0);
+        id = new SimpleIntegerProperty(idCounter++);
+        fitness = new SimpleDoubleProperty(0);
     }
-
 
     /**
      * @param data
      */
-    public Individual(Evolution parent, Genotype data){
-        this.parent = parent;
-
+    @Deprecated
+    public Individual(Genotype data){
         this.genotypes = data;
-
-        // -------------------------------------
-        // Make Phenotypes
-        // -------------------------------------
-        phenotypes = PhenotypeBuilder.translate(parent.getPhenotypeBuilder(), genotypes);
-
-        // Calc fitness
-        IFitness fitness = parent.getFitnessFunction();
-        individualFitness = EvaluateFitness.Evaluate(fitness, phenotypes);
     }
 
-    private static Collector<IPhenotype, StringJoiner, String> phenotypeCollector =
+    public void mutate(IMutation mutator){
+        this.genotypes = GeneticOperator.mutate(mutator, genotypes);
+    }
+
+    //public void convertToPhenotype(IPhenotypeBuilder builder){
+    //    phenotypes = PhenotypeBuilder.translate(builder, genotypes);
+    //}
+
+    /**
+     * Use setFitness instead
+     * @param fitnessFunction
+     */
+//    @Deprecated
+//    public void calculateFitness(IFitness fitnessFunction){
+//        fitness = EvaluateFitness.Evaluate(fitnessFunction, phenotypes);
+//    }
+
+    private Collector<T, StringJoiner, String> phenotypeCollector =
             Collector.of(
-                    () -> new StringJoiner(", "),          // supplier
-                    (j, p) -> j.add(String.valueOf(p.getValue())),  // accumulator
-                    (j1, j2) -> j1.merge(j2),               // combiner
-                    StringJoiner::toString);                // finisher
+                    () -> new StringJoiner(", "),           // supplier
+                    (j, p) -> j.add(String.valueOf(p)),     // accumulator
+                    StringJoiner::merge,                    // combiner (j1, j2) -> j1.merge(j2)
+                    StringJoiner::toString                  // finisher
+            );
 
     @Override
     public String toString() {
-        return "Individual: ->Gen: " + getAge() + " Fitness: " + individualFitness
+        return "Individual " + getId() +  " : ->Gen: " + getAge() + " Fitness: " + fitness
                 + "\n\tGenotypes:  " + genotypes.toString()
                 + "\n\tPhenotypes: " + phenotypes.stream().collect(phenotypeCollector);
+    }
+
+
+    public void setAge(int age) {
+        this.age.set(age);
+    }
+
+    public void setGenotypes(Genotype genotypes) {
+        this.genotypes = genotypes;
     }
 
     public Genotype getGenotypes() {
@@ -72,17 +90,28 @@ public class Individual implements Comparable<Individual>{
     }
 
     public double getFitness() {
-        return individualFitness;
+        return fitness.get();
+    }
+    public void setFitness(double fitness) {
+        this.fitness.set(fitness);
+         //fitness = fitness;
     }
 
     public int getAge() {
-        return age;
+        return age.get();
+    }
+
+    public int getId() {
+        return id.get();
+    }
+
+    public List<T> getPhenotypes(){
+        return phenotypes;
     }
 
     @Override
     public int compareTo(Individual o) {
-        if(getFitness() == o.getFitness()) return 0;
-        else if(getFitness() > o.getFitness()) return 1;
-        else return -1;
+        return Double.compare(getFitness(), o.getFitness());
     }
+
 }
