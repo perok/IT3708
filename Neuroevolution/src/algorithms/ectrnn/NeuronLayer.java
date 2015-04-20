@@ -14,7 +14,7 @@ public class NeuronLayer {
     public NeuronLayer(int numNeurons, int inputsPerNeuron){
         neurons = new LinkedList<>();
         IntStream.range(0, numNeurons)
-                .forEach(i -> neurons.add(new Neuron(inputsPerNeuron)));
+                .forEach(i -> neurons.add(new Neuron(inputsPerNeuron, numNeurons)));
     }
 
 

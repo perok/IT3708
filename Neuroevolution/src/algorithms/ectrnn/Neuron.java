@@ -30,6 +30,7 @@ public class Neuron {
     // ================================================
     int numberOfInputs;
     int numberOfEvolvableWeights;
+    int numberOfOtherOnLayerInputs;
 
     // 1..N = Weights, N+1 = bias, N+2 = gain, N+3 = time
     private List<Double> weights;
@@ -38,11 +39,17 @@ public class Neuron {
     // Internal state
     private double y = 0;
 
-    public Neuron(int inputs){
+    // Last output
+    private double lastOutput = 0;
+
+    public Neuron(int inputs, int layerSize){
         Random random = new Random();
         numberOfInputs = inputs + 1; // +1 = bias input
-        numberOfEvolvableWeights = numberOfInputs + 2; // Gain and time
+        numberOfOtherOnLayerInputs = layerSize;
+        //Feed forward inputs + bias | Other layers including self | Gain | time
+        // 1..N                      | N -> - 3                    | -2   |  -1
 
+        numberOfEvolvableWeights = numberOfInputs + (numberOfOtherOnLayerInputs) + 2;
         weights = new LinkedList<>();
         weightsByte = new LinkedList<>();
 
@@ -55,6 +62,11 @@ public class Neuron {
                 });
     }
 
+    /**
+     * Normal feedforward weights
+     *
+     * @return
+     */
     public int getNumberOfWeights(){
         return numberOfInputs;
     }
@@ -99,7 +111,25 @@ public class Neuron {
 
 
     public double getBias() {
-        return weights.get(numberOfEvolvableWeights - 3);
+        return weights.get(numberOfInputs - 1);
+    }
+
+    public double getOtherLayersLength() {
+        return numberOfOtherOnLayerInputs;
+    }
+
+    public double getOtherLayerWeight(int index) {
+        assert (index <= numberOfOtherOnLayerInputs);
+
+        return weights.get(numberOfInputs - 1 + index);
+    }
+
+    public double getLastOutput(){
+        return lastOutput;
+    }
+
+    public void setLastOutput(double lastOutput){
+        this.lastOutput = lastOutput;
     }
 
     public double getGain() {

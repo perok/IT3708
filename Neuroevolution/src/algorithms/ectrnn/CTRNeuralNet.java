@@ -132,9 +132,13 @@ public class CTRNeuralNet {
                     s += cNeuron.getWeight(k) * inputs.get(cWeight++);
                 }
 
+                // Get other lastOutputs on same layer (also takes self..
+                for (int k = 0; k < neuronLayers.get(i).getNeurons().size(); k++) {
+                    s += neuronLayers.get(i).getNeurons().get(k).getLastOutput() * cNeuron.getOtherLayerWeight(k);
+                }
+
                 // Formula 2
                 double timeDerivate = (1/cNeuron.getTime()) * (-1 * cNeuron.getY() + s + 1 * cNeuron.getBias());
-
 
                 // Formula 3
                 double output = 1 / (1 + Math.exp(-1 * cNeuron.getGain() * cNeuron.getY()));
@@ -146,7 +150,10 @@ public class CTRNeuralNet {
 
                 cWeight = 0;
             }
-
+            // Update outputs..
+            for (int j = 0; j < neuronLayers.get(i).getNeurons().size(); j++) {
+                neuronLayers.get(i).getNeurons().get(j).setLastOutput(outputs.get(j));
+            }
         }
 
         return outputs;
