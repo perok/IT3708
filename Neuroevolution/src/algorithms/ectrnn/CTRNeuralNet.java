@@ -105,6 +105,8 @@ public class CTRNeuralNet {
 
         // Incorrect amount if inputs. Return empty
         if(inputs.size() != numInputs) {
+            // todo should throw exception
+            System.err.println("Error wrong number of inputs: " + inputs.size() + ". Needed: " + numInputs);
             return new LinkedList<>();
         }
 
@@ -127,8 +129,8 @@ public class CTRNeuralNet {
 
                 Neuron cNeuron = neuronLayers.get(i).getNeurons().get(j);
 
-                // Formula 1: Si = sum Oj * Wij
-                for (int k = 0; k < cNeuron.numberOfInputs - 1; k++) {
+                // Formula 1: Si = sum Oj * Wij   todo extra minus one to remove bias
+                for (int k = 0; k < cNeuron.numberOfInputs - 1 -1; k++) {
                     s += cNeuron.getWeight(k) * inputs.get(cWeight++);
                 }
 
@@ -150,6 +152,7 @@ public class CTRNeuralNet {
 
                 cWeight = 0;
             }
+
             // Update outputs..
             for (int j = 0; j < neuronLayers.get(i).getNeurons().size(); j++) {
                 neuronLayers.get(i).getNeurons().get(j).setLastOutput(outputs.get(j));

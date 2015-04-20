@@ -73,6 +73,9 @@ public class AIController {
 
         // Find out what to do with output
         Map<Integer, Double> list = new HashMap<>();
+        System.out.println("Result: ");
+        list.keySet().stream().forEach(System.out::println);
+
         list.put(0, output.get(0));
         list.put(1, output.get(1));
 

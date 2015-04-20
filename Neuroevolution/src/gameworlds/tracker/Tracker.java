@@ -56,7 +56,7 @@ public class Tracker {
                 break;
             case RIGHT:
                 if (platformLeftPos + platformLength < width)
-                    platformLength++;
+                    platformLeftPos++;
         }
 
         // Move falling tile. If crash then register result and start again.
