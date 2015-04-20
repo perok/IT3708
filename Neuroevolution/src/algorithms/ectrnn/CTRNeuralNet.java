@@ -140,13 +140,13 @@ public class CTRNeuralNet {
                 }
 
                 // Formula 2
-                double timeDerivate = (1/cNeuron.getTime()) * (-1 * cNeuron.getY() + s + 1 * cNeuron.getBias());
+                double timeDerivative = (1 / cNeuron.getTime()) * (-1 * cNeuron.getY() + s + 1 * cNeuron.getBias());
 
                 // Formula 3
                 double output = 1 / (1 + Math.exp(-1 * cNeuron.getGain() * cNeuron.getY()));
 
                 // todo before or after F3?
-                cNeuron.addToY(timeDerivate);
+                cNeuron.addToY(timeDerivative);
 
                 outputs.add(output);
 

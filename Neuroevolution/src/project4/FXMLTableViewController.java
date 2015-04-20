@@ -181,7 +181,7 @@ public class FXMLTableViewController {
     private AnimationTimer makeSimulationRunner(final IndividualCTRBrain individual){
 
         final LongProperty lastUpdate = new SimpleLongProperty();
-        final long minUpdateInterval = 1000000000 / 10; // nanoseconds.
+        final long minUpdateInterval = 1000000000 / 20; // nanoseconds.
         return new AnimationTimer() {
             Tracker scenario = new Tracker();
 
@@ -213,9 +213,9 @@ public class FXMLTableViewController {
         int ySize = (int)(simulation.getHeight() / tracker.getHeight());
 
         gc.setFill(Color.BLACK);
-        gc.fillRect(tracker.getTileLeftPos() * xSize, tracker.getTileHeightPos() * ySize, tracker.getTileLength() * xSize, ySize);
+        gc.fillRect(tracker.getTileLeftPos() * xSize, (tracker.getHeight() - tracker.getTileHeightPos()) * ySize, tracker.getTileLength() * xSize, ySize);
 
-        gc.setFill(Color.BLACK);
+        gc.setFill(Color.YELLOW);
         gc.fillRect(tracker.getPlatformLeftPos() * xSize, tracker.getHeight() * ySize, tracker.getPlatformLength() * xSize, ySize);
     }
 }

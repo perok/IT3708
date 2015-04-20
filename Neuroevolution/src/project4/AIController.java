@@ -50,8 +50,8 @@ public class AIController {
                     // Setup a new Tracker
                     Tracker tracker = new Tracker();
 
-                    // Run Tracker with 60 iteration
-                    for (int i = 0; i < 60; i++) {
+                    // Run Tracker with 600 iteration
+                    for (int i = 0; i < 600; i++) {
                         Tracker.Movement move = helperIndividualFindMove(tracker, individualBrain);
 
                         // Perform the move
@@ -73,9 +73,7 @@ public class AIController {
 
         // Find out what to do with output
         Map<Integer, Double> list = new HashMap<>();
-        System.out.println("Result: ");
-        list.keySet().stream().forEach(System.out::println);
-
+        //System.out.println("Val1: " + output.get(0) + " Val2: " + output.get(1));
         list.put(0, output.get(0));
         list.put(1, output.get(1));
 

@@ -89,20 +89,35 @@ public class Neuron {
     private double createCorrectValueOnIndex(int index, Byte value){
         double v;
 
-        if(index == numberOfInputs - 1) // bias
+
+        if(index == numberOfInputs - 1) { // bias
             v = convert(value, lowerBoundBias, higherBoundBias);
-        else if(index == numberOfInputs) // gain
+            assert (v >= lowerBoundBias && v <= higherBoundBias);
+        }
+        else if(index == numberOfEvolvableWeights - 2) { // gain
             v = convert(value, lowerBoundGain, higherBoundGain);
-        else if(index == numberOfInputs + 1) // time
+            assert (v >= lowerBoundGain && v <= higherBoundGain);
+        }
+        else if(index == numberOfEvolvableWeights - 1) { // time
             v = convert(value, lowerBoundTime, higherBoundTime);
-        else // weight
+            assert (v >= lowerBoundTime && v <= higherBoundTime);
+
+        }
+        else { // weight
             v = convert(value, lowerBoundWeight, higherBoundWeight);
+            assert (v >= lowerBoundWeight && v <= higherBoundWeight);
+
+        }
 
         return v;
     }
 
     public double convert(byte value, int lower, int higher){
-        return value * ((lower + higher) / 256.0) - lower;
+
+        int byteV = new Byte(value).intValue() + 128;
+
+        double result = (byteV * ((higher - lower) / 256.0)) + lower;
+        return result;
     }
 
 

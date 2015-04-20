@@ -10,9 +10,9 @@ import java.util.Random;
 public class Tracker {
 
     int currentTimestep = 0;
+    int createTiles = 0;
 
     Random random;
-
 
     int height = 30;
     int width = 15;
@@ -89,13 +89,14 @@ public class Tracker {
     }
 
     private void createNewTile(){
+        createTiles++;
         tileLength = random.nextInt(6) + 1;
         tileLeftPos = random.nextInt(width - tileLength);
         tileHeightPos = height;
     }
 
     public double getStats(){
-        return positive / (double)(positive + negative);
+        return (positive - negative) / (double)createTiles;
     }
 
 
