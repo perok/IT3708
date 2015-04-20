@@ -15,7 +15,7 @@ public class GenerationStatistics {
     private double SSE;
     public double SD; // Standard deviation
     public double mean;
-    private double total;
+    public double total;
 
 
     private double bestFitness;
@@ -25,7 +25,7 @@ public class GenerationStatistics {
 
 
 
-    public GenerationStatistics(List<Individual> population, int generation) {
+    public GenerationStatistics(List<? extends Individual> population, int generation) {
         this.generation = generation;
 
         bestIndividual = population.stream()

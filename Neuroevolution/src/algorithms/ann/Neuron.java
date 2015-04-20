@@ -17,12 +17,11 @@ public class Neuron {
 
     public Neuron(int inputs){
         Random random = new Random();
-        numberOfInputs = inputs;
+        numberOfInputs = inputs + 1;
 
-        //inputs = new LinkedList<>();
         weights = new LinkedList<>();
 
-        IntStream.range(0, numberOfInputs + 1)
+        IntStream.range(0, numberOfInputs + 1) // todo +1 er nok en bug?
                 .forEach(i -> weights.add(random.nextDouble()));
     }
 
@@ -32,5 +31,8 @@ public class Neuron {
 
     public Double getWeight(int index){
         return weights.get(index);
+    }
+    public Double setWeight(int index, double value){
+        return weights.set(index, value);
     }
 }

@@ -9,32 +9,34 @@ import java.util.Random;
 
 /**
  * Created by Perÿyvind on 09/03/2015.
+ *
  */
 public class OneCrossover implements ICrossover {
     Random random = new Random();
 
     @Override
     public List<Genotype> crossover(Genotype genotypesA, Genotype genotypesB) {
-        int crossoverPoint = random.nextInt(genotypesA.getFixedLength());
-
-        Genotype n1 = new Genotype(genotypesA.getFixedLength());
-        Genotype n2 = new Genotype(genotypesA.getFixedLength());
-
-        for(int i = 0; i < genotypesA.getFixedLength(); i++) {
-            if(i > crossoverPoint) {
-                n1.getData().set(i, genotypesB.getData().get(i));
-                n2.getData().set(i, genotypesA.getData().get(i));
-            } else {
-                n1.getData().set(i, genotypesA.getData().get(i));
-                n2.getData().set(i, genotypesB.getData().get(i));
-            }
-        }
+        int length = genotypesA.getActualData().length;
+        int crossoverPoint = random.nextInt(length);
 
         List<Genotype> genotypes = new LinkedList<>();
-        if(random.nextDouble() < Constants.CROSSOVER_CHANCE)
+        if(random.nextDouble() < Constants.CROSSOVER_CHANCE) {
+            Genotype n1 = new Genotype(length, genotypesA.getFixedLength());
+
+            System.arraycopy(genotypesB.getActualData(), 0, n1.getActualData(), 0, crossoverPoint);
+            System.arraycopy(genotypesA.getActualData(), crossoverPoint, n1.getActualData(), crossoverPoint, length - crossoverPoint);
+
             genotypes.add(n1);
-        if(random.nextDouble() < Constants.CROSSOVER_CHANCE)
+        }
+        if(random.nextDouble() < Constants.CROSSOVER_CHANCE) {
+            Genotype n2 = new Genotype(length, genotypesA.getFixedLength());
+
+            System.arraycopy(genotypesA.getActualData(), 0, n2.getActualData(), 0, crossoverPoint);
+            System.arraycopy(genotypesB.getActualData(), crossoverPoint, n2.getActualData(), crossoverPoint, length - crossoverPoint);
+
             genotypes.add(n2);
+
+        }
 
         return genotypes;
     }

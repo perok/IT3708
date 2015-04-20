@@ -1,10 +1,8 @@
 package algorithms.ea;
 
 import algorithms.ea.adultselection.*;
-import algorithms.ea.fitness.IFitness;
 import algorithms.ea.individual.Genotype;
 import algorithms.ea.individual.Individual;
-import algorithms.ea.individual.builders.IPhenotypeBuilder;
 import algorithms.ea.individual.operators.GeneticOperator;
 import algorithms.ea.individual.operators.crossover.ICrossover;
 import algorithms.ea.individual.operators.mutation.IMutation;
@@ -12,6 +10,8 @@ import algorithms.ea.statistics.GenerationStatistics;
 import algorithms.ea.mating.MatingTechniques;
 import math.Statistics;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -58,17 +58,21 @@ import java.util.stream.Collectors;
  1
  *
  */
-public class Evolution implements Runnable{
+public class Evolution<T extends Individual> {
+    // -------------------------------------
+    // Variable setup
+    // -------------------------------------
+    private Random random;
+    private Class<T> reference;
+    private boolean ready = false;
 
-    private BlockingQueue<GenerationStatistics> dataQueue;
-    private LinkedList<Individual> population;
-
-    private IFitness fitness = null;
-    private IPhenotypeBuilder phenotypeBuilder = null;
-    private IMutation mutator = null;
+    // -------------------------------------
+    // Algorithm tweaks
+    // -------------------------------------
+    private IMutation mutatation = null;
     private ICrossover crossover = null;
 
-    private IParentSelection selectionsStrategy = null;
+    private ParentSelections selectionsStrategy = ParentSelections.OVER_PRODUCTION;
     private MatingTechniques matingStrategy = MatingTechniques.FITNESS_PROPORTIONATE;
 
 
@@ -78,34 +82,73 @@ public class Evolution implements Runnable{
     int CHIlDREN_POOL_SIZE = 40;
     int NUMBER_OF_ITERATIONS = 100;
 
+    int eliteism = 0;
 
-    private Random random;
-
-    private boolean quitWhenFitnessOver = false;
-    private double quitWhenFitnessOverThis;
-
-
-    private boolean ready = false;
-
-    public Evolution(){
+    /**
+     * Needs the generic class type as a paramter
+     * so it can be made when mating.
+     * @param reference
+     */
+    public Evolution(Class<T> reference){
+        this.reference = reference;
         random = new Random();
-       // population = new LinkedList<>();
     }
 
-    @Deprecated
-    public void addIndividual(Genotype genotype){
-        population.add(new Individual(this, genotype.makeCopy()));
-    }
+    /**
+     * Survival shit..
+     *
+     * @param population
+     * @param generation
+     * @return
+     */
+    private List<T> performAdultSelection(List<T> population, int generation) {
+        switch (selectionsStrategy) {
+//            All adults from the previous generation are removed (i.e., die),
+//            and all children gain free entrance to the adult pool. Thus, selection pressure on juveniles is completely
+//            absent.
+            case FULL:
+                return population.stream()
+                        .filter(i -> !(i.getAge() < generation))
+                        .sorted()
+                        .collect(Collectors.toList());
 
-    public void setPopulation(List<Individual> population) {
-        this.population = new LinkedList<>(population);
+//            All previous adults die, but m (the maximum size of the adult pool) is smaller
+//            than n (the number of children). Hence, the children must compete among themselves for the m adult
+//            spots, so selection pressure is significant. This is also known as (µ, ?) selection, where µ and ? are sizes
+//            of the adult and child pools, respectively.
+            case MIXING:
+                List<T> rofl = population.stream()
+                        .filter(i -> !(i.getAge() < generation))
+                //        .collect(Collectors.toList());
+                //rofl = rofl.stream()
+                        .sorted()
+                        .collect(Collectors.toList());
+                return rofl.stream()
+                        .skip(Helper.toSkip(rofl.size(), PARENT_POOL_SIZE))
+                        .collect(Collectors.toList());
+
+                //return rofl;
+
+//            The m adults from the previous generation do not die, so they and the n
+//            children compete in a free-for-all for the m adult spots in the next generation. Here, selection pressure
+//            on juveniles is extremely high, since they are competing with some of the best individuals that have
+//            evolved so far, regardless of their age. This is also known as (µ + ?) selection, where the plus indicates
+//            the mixing of adults and children during competition.
+            case OVER_PRODUCTION:
+                return population.stream()
+                        .sorted()
+                        .skip(Helper.toSkip(population.size(), PARENT_POOL_SIZE))
+                        .collect(Collectors.toList());
+        }
+
+        return null;
     }
 
     double T = 10;
 
-    private List<Individual> performMating(List<Individual> matingPool){
-        List<Individual> childrenPool = new LinkedList<>();
-        List<IndiviualWrapper> popSorted;
+    private List<T> performMating(List<T> matingPool){
+        List<T> childrenPool = new LinkedList<>();
+        List<IndiviualWrapper<T>> popSorted;
 
         switch (matingStrategy) {
             case FITNESS_PROPORTIONATE:
@@ -114,13 +157,13 @@ public class Evolution implements Runnable{
                         .sum();
 
                 popSorted = matingPool.stream()
-                        .map(i -> new IndiviualWrapper(i, i.getFitness() / populationFitness))
+                        .map(i -> new IndiviualWrapper<>(i, i.getFitness() / populationFitness))
                         .sorted()
                         .collect(Collectors.toList());
 
                 do {
-                    Individual found1 = IndiviualWrapper.findWheelSpinn(popSorted, random.nextDouble());
-                    Individual found2 = IndiviualWrapper.findWheelSpinn(popSorted, random.nextDouble());
+                    T found1 = findWheelSpin(popSorted, random.nextDouble());
+                    T found2 = findWheelSpin(popSorted, random.nextDouble());
 
                     if(found1 == null || found2 == null || found1 == found2) {
                         continue;
@@ -137,7 +180,7 @@ public class Evolution implements Runnable{
                 double gMean = Statistics.populationMean(matingPool);
                 double gSD = Statistics.standardDeviationPopulation(matingPool);
                 popSorted = matingPool.stream()
-                        .map(i -> new IndiviualWrapper(i, Statistics.sigmaScaling(i.getFitness(), gMean, gSD)))
+                        .map(i -> new IndiviualWrapper<>(i, Statistics.sigmaScaling(i.getFitness(), gMean, gSD)))
                         .sorted()
                         .collect(Collectors.toList());
 
@@ -149,8 +192,8 @@ public class Evolution implements Runnable{
                         .forEach(i -> i.fitness /= scaleFactor);
 
                 do {
-                    Individual found1 = IndiviualWrapper.findWheelSpinn(popSorted, random.nextDouble());
-                    Individual found2 = IndiviualWrapper.findWheelSpinn(popSorted, random.nextDouble());
+                    T found1 = findWheelSpin(popSorted, random.nextDouble());
+                    T found2 = findWheelSpin(popSorted, random.nextDouble());
 
                     if(found1 == null || found2 == null || found1 == found2) {
                         continue;
@@ -168,24 +211,24 @@ public class Evolution implements Runnable{
                 if(matingPool.size() < TOURNAMENT_K) TOURNAMENT_K = matingPool.size() - 1;
 
                 do {
-                    List<Individual> pool1 = new LinkedList<>();
-                    List<Individual> pool2 = new LinkedList<>();
+                    List<T> pool1 = new LinkedList<>();
+                    List<T> pool2 = new LinkedList<>();
 
                     do{
-                        Individual choosenOne = matingPool.get(random.nextInt(matingPool.size()));
+                        T choosenOne = matingPool.get(random.nextInt(matingPool.size()));
                         if(!pool1.contains(choosenOne)) pool1.add(choosenOne);
                     }while(pool1.size() < TOURNAMENT_K);
 
                     do{
-                        Individual choosenOne = matingPool.get(random.nextInt(matingPool.size()));
+                        T choosenOne = matingPool.get(random.nextInt(matingPool.size()));
                         if(!pool2.contains(choosenOne)) pool2.add(choosenOne);
                     }while(pool2.size() < TOURNAMENT_K);
 
                     pool1 = pool1.stream().sorted().collect(Collectors.toList());
                     pool2 = pool2.stream().sorted().collect(Collectors.toList());
 
-                    Individual found1 = null;
-                    Individual found2 = null;
+                    T found1 = null;
+                    T found2 = null;
 
                     for(int i = pool1.size() - 1; i >= 0; i--) {
                         if(i == 0) {
@@ -213,9 +256,9 @@ public class Evolution implements Runnable{
                 } while(childrenPool.size() < CHIlDREN_POOL_SIZE);
                 break;
             case BOLTZMAN:
-
+                // todo rewrite IndividualWrapper to HashMap<K, V>
                 popSorted = matingPool.stream()
-                        .map(i -> new IndiviualWrapper(i, Math.exp(i.getFitness() / T)))
+                        .map(i -> new IndiviualWrapper<>(i, Math.exp(i.getFitness() / T)))
                         .collect(Collectors.toList());
                 final double generationTotal = popSorted.stream().mapToDouble(IndiviualWrapper::getFitness).sum();
 
@@ -234,8 +277,8 @@ public class Evolution implements Runnable{
                         .forEach(i -> i.fitness /= scaleF);
 
                 do {
-                    Individual found1 = IndiviualWrapper.findWheelSpinn(popSorted, random.nextDouble());
-                    Individual found2 = IndiviualWrapper.findWheelSpinn(popSorted, random.nextDouble());
+                    T found1 = findWheelSpin(popSorted, random.nextDouble());
+                    T found2 = findWheelSpin(popSorted, random.nextDouble());
 
                     if(found1 == null || found2 == null || found1 == found2) {
                         continue;
@@ -246,6 +289,7 @@ public class Evolution implements Runnable{
                     // todo Empty after, so can't be choosen again?
                 } while(childrenPool.size() < CHIlDREN_POOL_SIZE);
 
+                // todo bug T is not reset?
                 T -= Constants.EPSILON_OR_ERROR;
                 break;
         }
@@ -254,90 +298,78 @@ public class Evolution implements Runnable{
 
     }
 
+    public T findWheelSpin(List<IndiviualWrapper<T>> individualWrappers, double wheelSpin) {
+        double fitnessAccumulator = 0;
+
+        for(int i = 0; i < individualWrappers.size(); i++) {
+            fitnessAccumulator += individualWrappers.get(i).fitness;
+            if(wheelSpin < fitnessAccumulator) {
+                return individualWrappers.get(i).individual;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * TODO write
      * @param individual1
      * @param individual2
      * @return
      */
-    private List<Individual> reproduce(Individual individual1, Individual individual2) {
+    private List<T> reproduce(T individual1, T individual2) {
         Genotype genotype1 = individual1.getGenotypes();
         Genotype genotype2 = individual2.getGenotypes();
 
-        return GeneticOperator.crossover(crossover, genotype1, genotype2)
-                .stream()
-                .map(g -> new Individual(this,
-                        g,
-                        1 + ((individual1.getAge() > individual2.getAge()) ? individual1.getAge() : individual2.getAge())))
+        return GeneticOperator.crossover(crossover, genotype1, genotype2).stream()
+                .map(g -> {
+                    T t = getInstanceOf();
+                    t.setAge(1 + ((individual1.getAge() > individual2.getAge()) ? individual1.getAge() : individual2.getAge()));
+                    t.setGenotypes(g);
+                    return t;
+                })
                 .collect(Collectors.toList());
     }
 
-    private List<Individual> nextEpoch(List<Individual> population, int generation) {
+    /**
+     * Calulate the populations next epoch.
+     *
+     * Remember to create their phenotypes and calculate their fitness
+     * before running.
+     *
+     * @param population
+     * @param generation
+     * @return
+     */
+    public List<T> nextEpoch(List<T> population, int generation) {
+        // 0. Eliteism. Take out n best and send straight to mating
+
         // 1. Adult selection - The fight for a place! Survival
-        List<Individual> newPopulation = this.selectionsStrategy.performParentSelection(population, generation);
+        List<T> newPopulation = performAdultSelection(population, generation);
 
         System.out.println("\tAdult selection performed. New population to carry on: " + newPopulation.size());
 
         // 2. Parent selection - Who get to mate of the survivors
-        List<Individual> newChildren = performMating(newPopulation).stream()
-                .map(i -> new Individual(
-                        this,
-                        GeneticOperator.mutate(mutator, i.getGenotypes()),
-                        i.getAge()
-                ))
+        List<T> newChildren = performMating(newPopulation).stream()
+                .peek(individual -> individual.mutate(mutatation))
                 .collect(Collectors.toList());
 
         System.out.println("\tMating pool created. Containing: " + newChildren.size());
 
         newPopulation.addAll(newChildren);
 
-        // Perform mutations on whole population
         // todo mutate for all, or only children
         return newPopulation;
     }
 
-    @Deprecated // todo Should be class over that handles this
-    public void loop(){
+    private T getInstanceOf() {
+        try {
+            return reference.newInstance();
+        } catch (InstantiationException | IllegalAccessException e ) {
+            e.printStackTrace();
+        }
 
-        int generation = 0;
-        List<Individual> population = this.population;
-
-        do {
-            double totalFitness = population.stream()
-                    .mapToDouble(Individual::getFitness)
-                    .sum();
-
-            System.out.println(
-                    "Generation: " + generation +
-                            ". Total fitness: " + totalFitness +
-                            ". Individuals: " + population.size());
-
-            // Run
-            population = nextEpoch(population, generation);
-
-            // Send to GUI
-            GenerationStatistics gs = new GenerationStatistics(population, generation);
-            System.out.println("\t\tBest: " + gs.bestIndividual);
-            System.out.println("\t\tMean: " + gs.mean + "\tSD: " + gs.SD + "\tLength: ");
-
-            if(dataQueue != null) {
-                try {
-                    dataQueue.put(gs);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if(quitWhenFitnessOver && gs.bestIndividual.getFitness() >= quitWhenFitnessOverThis) {
-                System.out.println("Success!");
-                System.out.println("Best is: " + gs.bestIndividual);
-                break;
-            }
-
-            generation++;
-        } while (generation < NUMBER_OF_ITERATIONS);
-
-        System.out.println("EA loop finished.");
+        return null;
     }
 
     /**
@@ -345,16 +377,8 @@ public class Evolution implements Runnable{
      * @return null if error
      */
     public Evolution build(){
-        if(fitness == null) {
-            System.err.println("Build abort: Missing fitness function");
-            return null;
-        }
-        else if(phenotypeBuilder == null) {
-            System.err.println("Build abort: Missing phenotype builder");
-            return null;
-        }
-        else if(mutator == null) {
-            System.err.println("Build abort: Missing mutator function");
+        if(mutatation == null) {
+            System.err.println("Build abort: Missing mutatation function");
             return null;
         }
         else if(crossover == null) {
@@ -362,90 +386,28 @@ public class Evolution implements Runnable{
             return null;
         }
 
-        if(dataQueue == null) {
-            System.out.println("Build: Running without thread safe queue to report too.");
-        }
-
         System.out.println("==== Evolution algorithm ready ====");
-        System.out.println("Fitness function: " + fitness);
-        System.out.println("Phenotype builder: " + phenotypeBuilder);
-        System.out.println("Mutator: " + mutator);
+        System.out.println("Mutator: " + mutatation);
         System.out.println("Crossover: " + crossover);
         System.out.println("Parent pool size: " + PARENT_POOL_SIZE);
         System.out.println("Children pool size: " + CHIlDREN_POOL_SIZE);
         System.out.println("# of iterations: " + NUMBER_OF_ITERATIONS);
-        System.out.println("Selection strategy: " + selectionsStrategy); //.name());
+        System.out.println("Parent strategy: " + selectionsStrategy.name());
         System.out.println("Mating strategy: " + matingStrategy.name());
+        System.out.println("Eliteism       : " + eliteism);
 
-        if(quitWhenFitnessOver)
-            System.out.println("Quitting when fitness over: " + quitWhenFitnessOver);
 
         ready = true;
         return this;
     }
 
-    @Override
-    public void run() {
-        if(ready)
-            loop();
-        else
-            System.err.println("Error: Evolution algorithm is not built.");
-    }
 
     // -------------------------------------
     // Getters and setters
     // -------------------------------------
 
-    public Evolution setDataListener(BlockingQueue<GenerationStatistics> dataListener) {
-        this.dataQueue = dataListener;
-
-        return this;
-    }
-
-    public Evolution setQuitWhenFitnessOver(double quitWhenFitnessOver) {
-        this.quitWhenFitnessOver = true;
-        this.quitWhenFitnessOverThis = quitWhenFitnessOver;
-
-        return this;
-    }
-
-    public Evolution setFitnessFunction(IFitness fitness) {
-        this.fitness = fitness;
-        return this;
-    }
-
-    public IFitness getFitnessFunction() {
-        return fitness;
-    }
-
-    public Evolution setPhenotypeBuilder(IPhenotypeBuilder IPhenotypeBuilder) {
-        this.phenotypeBuilder = IPhenotypeBuilder;
-
-        return this;
-    }
-
-    public IPhenotypeBuilder getPhenotypeBuilder() {
-        return phenotypeBuilder;
-    }
-
     public Evolution setAdultSelectionsStrategy(ParentSelections selectionsStrategy) {
-        switch (selectionsStrategy) {
-            // All adults from the previous generation are removed (i.e., die),
-            // and all children gain free entrance to the adult pool. Thus, selection pressure on juveniles is completely
-            // absent.
-            case FULL:
-                this.selectionsStrategy = new Full();
-                break;
-            case MIXING:
-                this.selectionsStrategy = new Mixing();
-                break;
-            case OVER_PRODUCTION:
-                this.selectionsStrategy = new OverProduction();
-                break;
-            default:
-                System.err.println("Parent selection strategy invalid");
-                this.selectionsStrategy = null;
-        }
+        this.selectionsStrategy = selectionsStrategy;
 
         return this;
     }
@@ -455,8 +417,8 @@ public class Evolution implements Runnable{
         return this;
     }
 
-    public Evolution setMutator(IMutation mutator) {
-        this.mutator = mutator;
+    public Evolution setMutation(IMutation mutatation) {
+        this.mutatation = mutatation;
         return this;
     }
 
@@ -479,5 +441,13 @@ public class Evolution implements Runnable{
     public Evolution setNUMBER_OF_ITERATIONS(int NUMBER_OF_ITERATIONS) {
         this.NUMBER_OF_ITERATIONS = NUMBER_OF_ITERATIONS;
         return this;
+    }
+
+    public void setEliteism(int eliteism) {
+        this.eliteism = eliteism;
+    }
+
+    public int getEliteism() {
+        return eliteism;
     }
 }

@@ -1,41 +1,141 @@
 package project3;
 
-import algorithms.ann.NeuralNet;
-import algorithms.ea.fitness.IFitness;
-import algorithms.ea.individual.IPhenotype;
+import algorithms.eann.Neuroevolution;
+import algorithms.eann.IndividualBrain;
+import gameworlds.flatland.Flatland;
+import gameworlds.flatland.Movement;
+import gameworlds.flatland.sensor.Sensed;
 
-import java.util.List;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by Perÿyvind on 13/04/2015.
  */
 public class AIController {
 
-
+    private List<IndividualBrain> population;
+    private int populationSize = 100;
+    private int epoch = 0;
+    private Neuroevolution neuroevolution;
 
     // 1. Make a population
-    // 2. Run population on gameworld
+    // 2. Run population on game world
     // 3. Collect fitness underway
 
-    public AIController(){
+
+    private Flatland currentScenario;
 
 
-        IFitness<Double> fitness = new IFitness<Double>() {
-            @Override
-            public double calculateFitness(List<IPhenotype<Double>> iPhenotypes) {
+    public AIController() {
+        neuroevolution = new Neuroevolution();
+
+        // ----------------------------------
+        // Create random population
+        // ----------------------------------
+        population = new LinkedList<>();
+        IntStream.range(0, populationSize)
+                .forEach(i -> population.add(new IndividualBrain()));
+
+        calculateFitnessOnPopulation();
+    }
 
 
-                NeuralNet neuralNet = new NeuralNet();
+    private void calculateFitnessOnPopulation(){
+        // dynamic..
+        currentScenario = new Flatland(10, 1/3.0, 1/3.0);
 
-                // Insert weights
+        population
+                .stream()
+                // Make phenotypes - In case they have changed since evolution
+                .peek(IndividualBrain::buildPhenotypes)
+                .peek(IndividualBrain::rewireBrain)
+                // ----------------------------------
+                // Fitness function that run Flatland
+                // ----------------------------------
+                .peek(individualBrain -> {
+                    // Setup Flatland
+                    Flatland flatland = new Flatland(currentScenario);
 
-                neuralNet.createNet();
+                    // Run Flatland with 60 iteration
+                    for (int i = 0; i < 60; i++) {
+                        Movement move = helperIndividualFindMove(flatland, individualBrain);
+
+                        // Perform the move
+                        flatland.move(move);
+                    }
+
+                    // Record the fitness
+                    individualBrain.setFitness(flatland.getStats());
+                })
+                .collect(Collectors.toList());
+    }
 
 
 
-                // todo must be able to collect data from last gameloop run
-                return 0;
-            }
-        };
+    public static Movement helperIndividualFindMove(Flatland flatland, IndividualBrain individualBrain){
+        Sensed sensoryInput = flatland.getSensory();
+        List<Double> input = new LinkedList<>();
+        input.add((double) sensoryInput.left.value);
+        input.add((double) sensoryInput.front.value);
+        input.add((double) sensoryInput.right.value);
+
+
+        // Run through brain
+        List<Double> output = individualBrain.think(input);
+
+        // Find out what to do with output
+        Map<Integer, Double> list = new HashMap<>();
+        list.put(0, output.get(0));
+        list.put(1, output.get(1));
+        list.put(2, output.get(2));
+
+        Optional<Map.Entry<Integer, Double>> val = list.entrySet().stream()
+                .sorted(byValue.reversed())
+                .findFirst();
+
+        switch (val.get().getKey()) {
+            case 0:
+                return Movement.LEFTFORWARD;
+            case 1:
+                return Movement.FORWARD;
+            case 2:
+                return Movement.RIGHTFORWARD;
+            default:
+                System.err.println("WTF");
+                return Movement.FORWARD;
+        }
+    }
+
+    /**
+     * Runs one epoch and returns the best individual
+     */
+    public IndividualBrain runOneEpoch(){
+
+        // Run population through EANN
+        population = neuroevolution.evolve(population, epoch++);
+
+        // Calculate the fitness
+        calculateFitnessOnPopulation();
+
+        return population.stream().max(IndividualBrain::compareTo).get();
+    }
+
+    static Comparator<Map.Entry<Integer, Double>> byValue = (entry1, entry2) -> entry1.getValue().compareTo(
+            entry2.getValue());
+
+
+    public List<IndividualBrain> getPopulation() {
+        return population;
+    }
+
+    public Flatland getCurrentScenario() {
+        return currentScenario;
+    }
+
+    public int getEpoch() {
+        return epoch;
     }
 }

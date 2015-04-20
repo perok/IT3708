@@ -11,9 +11,7 @@ public class Vector2 {
     public static float TO_DEGREES = (1 / (float)Math.PI) * 180;
     public double x, y;
 
-
-    public Vector2() {
-    }
+    public Vector2() {}
 
     public Vector2(double x, double y) {
         this.x = x;
@@ -131,5 +129,10 @@ public class Vector2 {
         double distX = this.x - x;
         double distY = this.y - y;
         return distX*distX + distY*distY;
+    }
+
+    @Override
+    public String toString() {
+        return "Vector2(" + x + ", " + y + ")";
     }
 }

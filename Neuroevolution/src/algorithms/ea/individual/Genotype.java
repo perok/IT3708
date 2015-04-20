@@ -1,7 +1,7 @@
 package algorithms.ea.individual;
 
 
-import algorithms.ea.Helper;
+import helpers.Conversion;
 
 import java.util.BitSet;
 import java.util.stream.IntStream;
@@ -14,45 +14,41 @@ import java.util.stream.IntStream;
  */
 public class Genotype {
 
-    private BitSet data;
+    private byte[] actualData;
+
     private int length = 0;
 
-    public Genotype(String genotype) {
-        this.data = new BitSet();
-        IntStream.range(0, genotype.length())
-                .filter(i -> genotype.charAt(i) == '1')
-                .forEach(i -> this.data.set(i));
 
-        length = genotype.length();
+    /**
+     * Setup a new Genotype. Copies the genotype data.
+     * @param genotype
+     * @param length
+     */
+    public Genotype(byte[] genotype, int length) {
+        this.length = length;
+
+        this.actualData = new byte[genotype.length];
+
+        System.arraycopy(genotype, 0, this.actualData, 0, genotype.length);
     }
 
-    public Genotype(BitSet genotype, int length) {
+    public Genotype(int datalength, int length) {
+        this.actualData = new byte[datalength];
         this.length = length;
-        this.data = Helper.copyBitSet(genotype);
     }
 
-    public Genotype(int length) {
-        this.length = length;
-        this.data = new BitSet();
+    public byte[] getActualData(){
+        return this.actualData;
     }
 
     public Genotype makeCopy() {
-        return new Genotype(data, length);
-    }
-
-    public void copyFrom(Genotype g){
-        data = Helper.copyBitSet(g.data);
-        length = g.getFixedLength();
+        return new Genotype(actualData, length);
     }
 
 
-    public boolean getValue(int pos) {
-        return data.get(pos);
-    }
-
-
-    public BitSet getData() {
-        return data;
+    @Deprecated
+    public BitSet getBitSetData() {
+        return Conversion.fromByteArray(actualData);
     }
 
 
@@ -64,6 +60,8 @@ public class Genotype {
     public String toString(){
 
         String print = "";
+
+        BitSet data = Conversion.fromByteArray(actualData);
 
         for(int i = 0; i < getFixedLength(); i++) {
             print += data.get(i) ? "1" : "0";
