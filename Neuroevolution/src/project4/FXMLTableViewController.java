@@ -5,6 +5,7 @@ import algorithms.eann.IndividualBrain;
 import gameworlds.flatland.Flatland;
 import gameworlds.flatland.Movement;
 import gameworlds.flatland.sensor.Items;
+import gameworlds.tracker.Tracker;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -204,34 +205,16 @@ public class FXMLTableViewController {
 }
 
 
-    private void redraw(Items[][] world, Vector2 agentPosition) {
+    private void redraw(Tracker tracker) {
         gc.clearRect(0, 0, simulation.getWidth(), simulation.getHeight());
 
-        int xSize = (int)(simulation.getWidth() / world[0].length);
-        int ySize = (int)(simulation.getHeight() / world.length);
+        int xSize = (int)(simulation.getWidth() / tracker.getWidth());
+        int ySize = (int)(simulation.getHeight() / tracker.getHeight());
 
-        for (int y = 0; y < world.length; y++) {
-            for (int x = 0; x < world[0].length; x++) {
-                if(agentPosition.x == x && agentPosition.y == y) {
-                    world[y][x] = Items.NOTHING;
-                    gc.setFill(Color.YELLOW);
+        gc.setFill(Color.BLACK);
+        gc.fillRect(tracker.getTileLeftPos() * xSize, tracker.getTileHeightPos() * ySize, tracker.getTileLength() * xSize, ySize);
 
-                } else {
-                    switch (world[y][x]) {
-                        case POISON:
-                            gc.setFill(Color.RED);
-                            break;
-                        case FOOD:
-                            gc.setFill(Color.GREEN);
-                            break;
-                        case NOTHING:
-                            gc.setFill(Color.WHITE);
-                            break;
-                    }
-                }
-
-                gc.fillRect(x * xSize, y * ySize, xSize, ySize);
-            }
-        }
+        gc.setFill(Color.BLACK);
+        gc.fillRect(tracker.getPlatformLeftPos() * xSize, tracker.getHeight() * ySize, tracker.getPlatformLength() * xSize, ySize);
     }
 }

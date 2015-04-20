@@ -100,4 +100,32 @@ public class Tracker {
     public enum Movement {
         LEFT, RIGHT
     }
+
+    public int getTileLeftPos() {
+        return tileLeftPos;
+    }
+
+    public int getTileLength() {
+        return tileLength;
+    }
+
+    public int getTileHeightPos() {
+        return tileHeightPos;
+    }
+
+    public int getPlatformLeftPos() {
+        return platformLeftPos;
+    }
+
+    public int getPlatformLength() {
+        return platformLength;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
 }
