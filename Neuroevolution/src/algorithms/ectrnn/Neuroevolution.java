@@ -10,7 +10,7 @@ import algorithms.eann.IndividualBrain;
 import java.util.List;
 
 /**
- * Created by PerØyvind on 03/04/2015.
+ * Created by Perï¿½yvind on 03/04/2015.
  *
  * Feed forward neural net brain
  */
@@ -34,5 +34,13 @@ public class Neuroevolution {
     // todo Evolves a set of IndividualBrains with the evolution algorithm
     public List<IndividualCTRBrain> evolve(List<IndividualCTRBrain> population, int generation) {
         return evolution.nextEpoch(population, generation);
+    }
+
+    public void setElitism(int elites) {
+        evolution.setEliteism(elites);
+    }
+
+    public int getElitism() {
+        return evolution.getEliteism();
     }
 }
