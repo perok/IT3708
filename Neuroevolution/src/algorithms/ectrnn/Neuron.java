@@ -46,13 +46,13 @@ public class Neuron {
         weights = new LinkedList<>();
         weightsByte = new LinkedList<>();
 
-        IntStream.range(0, numberOfInputs)
+        IntStream.range(0, numberOfEvolvableWeights)
                 .forEach(i -> {
                     byte[] onebyte = new byte[1];
 
                     random.nextBytes(onebyte);
                     setWeight(i, onebyte[0]);
-                    });
+                });
     }
 
     public int getNumberOfWeights(){

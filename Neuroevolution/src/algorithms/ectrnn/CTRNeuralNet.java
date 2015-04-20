@@ -9,16 +9,17 @@ import java.util.stream.IntStream;
  * Created by PerØyvind on 19/04/2015.
  *
  * Continuous time recurrent neural net
+ *
+ * todo neuroner har state, må kunne resettes
  */
 public class CTRNeuralNet {
-    int numInputs;
-    int numOutputs;
-    int numHiddenLayers;
-    int neuronsPerHiddenLayer;
+    private int numInputs;
+    private int numOutputs;
+    private int numHiddenLayers;
+    private int neuronsPerHiddenLayer;
 
     // numHiddenLayers + outputLayer
-    List<NeuronLayer> neuronLayers;
-
+    private List<NeuronLayer> neuronLayers;
 
     public CTRNeuralNet(int numInputs, int numOutputs, int numHiddenLayers, int neuronsPerHiddenLayer){
         this.numInputs = numInputs;
@@ -134,11 +135,12 @@ public class CTRNeuralNet {
                 // Formula 2
                 double timeDerivate = (1/cNeuron.getTime()) * (-1 * cNeuron.getY() + s + 1 * cNeuron.getBias());
 
-                // todo before or after F3?
-                cNeuron.addToY(timeDerivate);
 
                 // Formula 3
                 double output = 1 / (1 + Math.exp(-1 * cNeuron.getGain() * cNeuron.getY()));
+
+                // todo before or after F3?
+                cNeuron.addToY(timeDerivate);
 
                 outputs.add(output);
 
