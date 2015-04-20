@@ -27,7 +27,7 @@ public class gui extends Application{
         // ================================================
         // Setup GUI
         // ================================================
-        stage.setTitle("Flatland - EANN");
+        stage.setTitle("Flatland - CTRNN");
         Pane myPane = FXMLLoader.load(getClass().getResource("gui.fxml"));
         Scene myScene = new Scene(myPane);
 
