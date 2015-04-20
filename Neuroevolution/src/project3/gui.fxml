@@ -11,6 +11,7 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.CheckBox?>
 <GridPane alignment="CENTER" hgap="10.0" vgap="10.0"
           xmlns:fx="http://javafx.com/fxml"
           prefWidth="800"
@@ -75,6 +76,8 @@
     <VBox spacing="10" alignment="top_right" GridPane.columnIndex="1"
     GridPane.rowIndex="0">
         <Button text="Toggle Darwinism" onAction="#startAi"/>
+
+        <CheckBox text="Static worlds" onAction="#toggleStaticWorlds"/>
 
         <HBox spacing="10" alignment="top_right">
             <Text text="Is running:"/>
