@@ -120,10 +120,6 @@ public class AIController {
         return population;
     }
 
-    public Flatland getCurrentScenario() {
-        return currentScenario;
-    }
-
     public int getEpoch() {
         return epoch;
     }

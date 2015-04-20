@@ -46,6 +46,8 @@ public class Tracker {
     }
 
     public void newStep(Movement movement){
+        currentTimestep++;
+
         // Move platform
         switch (movement) {
             case LEFT:
@@ -127,5 +129,9 @@ public class Tracker {
 
     public int getHeight() {
         return height;
+    }
+
+    public int getCurrentTimestep() {
+        return currentTimestep;
     }
 }

@@ -160,7 +160,7 @@ public class FXMLTableViewController {
                             if (simulationRunner != null)
                                 simulationRunner.stop();
 
-                            simulationRunner = makeSimulationRunner(rowData, aiController.getCurrentScenario());
+                            simulationRunner = makeSimulationRunner(rowData);
 
                             simulationRunner.start();
                         }
@@ -177,22 +177,22 @@ public class FXMLTableViewController {
         isRunning.set(!isRunning.get());
     }
 
-    private AnimationTimer makeSimulationRunner(final IndividualBrain individual, final Flatland flatland){
+    private AnimationTimer makeSimulationRunner(final IndividualBrain individual){
 
         final LongProperty lastUpdate = new SimpleLongProperty();
-        final long minUpdateInterval = 1000000000; // nanoseconds.
+        final long minUpdateInterval = 1000000000 / 10; // nanoseconds.
         return new AnimationTimer() {
-            Flatland scenario = new Flatland(flatland);
+            Tracker scenario = new Tracker();
 
             @Override
             public void handle(long now) {
-                int cStep = scenario.getCurrentTotalSteps();
+                int cStep = scenario.getCurrentTimestep();
 
                 if (now - lastUpdate.get() > minUpdateInterval) {
-                    if (cStep < 60) {
-                        Movement move = AIController.helperIndividualFindMove(scenario, individual);
-                        scenario.move(move);
-                        redraw(scenario.getWorld(), scenario.getAgentPosition());
+                    if (cStep < 600) {
+                        Tracker.Movement move = AIController.helperIndividualFindMove(scenario, individual);
+                        scenario.newStep(move);
+                        redraw(scenario);
 
                     } else {
                         this.stop();
