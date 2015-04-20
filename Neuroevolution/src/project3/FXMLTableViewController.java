@@ -219,6 +219,10 @@ public class FXMLTableViewController {
             }
         };
 }
+    @FXML
+    private void toggleStaticWorlds(ActionEvent event) {
+        aiController.toggleStaticWorlds();
+    }
 
 
     private void redraw(Items[][] world, Vector2 agentPosition) {
