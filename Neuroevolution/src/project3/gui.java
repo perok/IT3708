@@ -12,7 +12,7 @@ import java.io.IOException;
 /**
  * Created by Perÿyvind on 13/04/2015.
  */
-public class GUI extends Application{
+public class gui extends Application{
 
     Image food;
     Image poisong;
