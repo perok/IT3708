@@ -59,7 +59,7 @@ public class AIController {
 
                     // Run Tracker with 60 iteration
                     for (int i = 0; i < 60; i++) {
-                        Movement move = helperIndividualFindMove(tracker, individualBrain);
+                        Tracker.Movement move = helperIndividualFindMove(tracker, individualBrain);
 
                         // Perform the move
                         tracker.newStep(move);
@@ -73,22 +73,15 @@ public class AIController {
 
 
 
-    public static Movement helperIndividualFindMove(Tracker tracker, IndividualBrain individualBrain){
-        List<Double> sensoryInput = tracker.getSensory();
-        List<Double> input = new LinkedList<>();
-        input.add((double) sensoryInput.left.value);
-        input.add((double) sensoryInput.front.value);
-        input.add((double) sensoryInput.right.value);
-
+    public static Tracker.Movement helperIndividualFindMove(Tracker tracker, IndividualBrain individualBrain){
 
         // Run through brain
-        List<Double> output = individualBrain.think(input);
+        List<Double> output = individualBrain.think(tracker.getSensory());
 
         // Find out what to do with output
         Map<Integer, Double> list = new HashMap<>();
         list.put(0, output.get(0));
         list.put(1, output.get(1));
-        list.put(2, output.get(2));
 
         Optional<Map.Entry<Integer, Double>> val = list.entrySet().stream()
                 .sorted(byValue.reversed())
@@ -96,14 +89,12 @@ public class AIController {
 
         switch (val.get().getKey()) {
             case 0:
-                return Movement.LEFTFORWARD;
+                return Tracker.Movement.LEFT;
             case 1:
-                return Movement.FORWARD;
-            case 2:
-                return Movement.RIGHTFORWARD;
+                return Tracker.Movement.RIGHT;
             default:
                 System.err.println("WTF");
-                return Movement.FORWARD;
+                return Tracker.Movement.LEFT;
         }
     }
 
