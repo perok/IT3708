@@ -5,6 +5,7 @@ import algorithms.eann.Neuroevolution;
 import gameworlds.flatland.Flatland;
 import gameworlds.flatland.Movement;
 import gameworlds.flatland.sensor.Sensed;
+import gameworlds.tracker.Tracker;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -43,8 +44,6 @@ public class AIController {
 
 
     private void calculateFitnessOnPopulation(){
-        // dynamic..
-        currentScenario = new Flatland(10, 1/3.0, 1/3.0);
 
         population
                 .stream()
@@ -52,30 +51,30 @@ public class AIController {
                 .peek(IndividualBrain::buildPhenotypes)
                 .peek(IndividualBrain::rewireBrain)
                 // ----------------------------------
-                // Fitness function that run Flatland
+                // Fitness function that run Tracker
                 // ----------------------------------
                 .peek(individualBrain -> {
-                    // Setup Flatland
-                    Flatland flatland = new Flatland(currentScenario);
+                    // Setup a new Tracker
+                    Tracker tracker = new Tracker();
 
-                    // Run Flatland with 60 iteration
+                    // Run Tracker with 60 iteration
                     for (int i = 0; i < 60; i++) {
-                        Movement move = helperIndividualFindMove(flatland, individualBrain);
+                        Movement move = helperIndividualFindMove(tracker, individualBrain);
 
                         // Perform the move
-                        flatland.move(move);
+                        tracker.newStep(move);
                     }
 
                     // Record the fitness
-                    individualBrain.setFitness(flatland.getStats());
+                    individualBrain.setFitness(tracker.getStats());
                 })
                 .collect(Collectors.toList());
     }
 
 
 
-    public static Movement helperIndividualFindMove(Flatland flatland, IndividualBrain individualBrain){
-        Sensed sensoryInput = flatland.getSensory();
+    public static Movement helperIndividualFindMove(Tracker tracker, IndividualBrain individualBrain){
+        List<Double> sensoryInput = tracker.getSensory();
         List<Double> input = new LinkedList<>();
         input.add((double) sensoryInput.left.value);
         input.add((double) sensoryInput.front.value);
