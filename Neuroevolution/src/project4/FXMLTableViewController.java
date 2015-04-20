@@ -1,11 +1,7 @@
 package project4;
 
 import algorithms.ea.statistics.GenerationStatistics;
-import algorithms.eann.IndividualBrain;
 import algorithms.ectrnn.IndividualCTRBrain;
-import gameworlds.flatland.Flatland;
-import gameworlds.flatland.Movement;
-import gameworlds.flatland.sensor.Items;
 import gameworlds.tracker.Tracker;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.*;
@@ -17,11 +13,12 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import math.linnalg.Vector2;
 
 /**
  * Created by Per�yvind on 18/04/2015.
@@ -46,6 +43,9 @@ public class FXMLTableViewController {
     Text txtCurrentBestFitness;
 
     @FXML
+    TextField txtfSimulationInterval;
+
+    @FXML
     LineChart<Number, Number> lcAiStatistics;
 
     private GraphicsContext gc;
@@ -66,6 +66,10 @@ public class FXMLTableViewController {
 
     private AnimationTimer simulationRunner;
 
+    // nanoseconds.
+    private LongProperty minSimulationUpdateInterval = new SimpleLongProperty(1000000000 / 20);
+
+
 
     /**
      * Run by JavaFX
@@ -82,6 +86,9 @@ public class FXMLTableViewController {
 
         cBestFitness = new SimpleDoubleProperty(0);
         cTotalFitness = new SimpleDoubleProperty(0);
+
+
+        txtfSimulationInterval.setText(minSimulationUpdateInterval.getValue().toString());
 
         data = FXCollections.observableArrayList(aiController.getPopulation());
 
@@ -106,6 +113,10 @@ public class FXMLTableViewController {
                 aiRunner.start();
             else
                 aiRunner.stop();
+        }));
+
+        txtfSimulationInterval.textProperty().addListener(((observable, oldValue, newValue) -> {
+            minSimulationUpdateInterval.set(Long.valueOf(newValue));
         }));
 
         tableView.setItems(data);
@@ -181,7 +192,6 @@ public class FXMLTableViewController {
     private AnimationTimer makeSimulationRunner(final IndividualCTRBrain individual){
 
         final LongProperty lastUpdate = new SimpleLongProperty();
-        final long minUpdateInterval = 1000000000 / 20; // nanoseconds.
         return new AnimationTimer() {
             Tracker scenario = new Tracker();
 
@@ -189,7 +199,7 @@ public class FXMLTableViewController {
             public void handle(long now) {
                 int cStep = scenario.getCurrentTimestep();
 
-                if (now - lastUpdate.get() > minUpdateInterval) {
+                if (now - lastUpdate.get() > minSimulationUpdateInterval.get()) {
                     if (cStep < 600) {
                         Tracker.Movement move = AIController.helperIndividualFindMove(scenario, individual);
                         scenario.newStep(move);
@@ -212,7 +222,12 @@ public class FXMLTableViewController {
         int xSize = (int)(simulation.getWidth() / tracker.getWidth());
         int ySize = (int)(simulation.getHeight() / tracker.getHeight());
 
-        gc.setFill(Color.BLACK);
+        if(tracker.getTileLength() > 4) {
+            gc.setFill(Color.RED);
+        } else {
+            gc.setFill(Color.GREEN);
+        }
+
         gc.fillRect(tracker.getTileLeftPos() * xSize, (tracker.getHeight() - tracker.getTileHeightPos()) * ySize, tracker.getTileLength() * xSize, ySize);
 
         gc.setFill(Color.YELLOW);

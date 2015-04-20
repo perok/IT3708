@@ -130,7 +130,7 @@ public class CTRNeuralNet {
                 Neuron cNeuron = neuronLayers.get(i).getNeurons().get(j);
 
                 // Formula 1: Si = sum Oj * Wij   todo extra minus one to remove bias
-                for (int k = 0; k < cNeuron.numberOfInputs - 1 -1; k++) {
+                for (int k = 0; k < cNeuron.numberOfInputs -1 -1; k++) {
                     s += cNeuron.getWeight(k) * inputs.get(cWeight++);
                 }
 

@@ -81,6 +81,8 @@
             <Separator ></Separator>
             <Text fx:id="txtCurrentEpoch" text="0"/>
         </HBox>
+
+        <TextField fx:id="txtfSimulationInterval"/>
     </VBox>
 
 
