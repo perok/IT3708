@@ -63,22 +63,33 @@ public class Tracker {
         tileHeightPos--;
 
         if (tileHeightPos < 1) {
-            // Check if capture
-            if(tileLeftPos >= platformLeftPos && (tileLeftPos + tileLength) <= (platformLeftPos + platformLength)){
+            // Check if touching platform
+            if(tileLeftPos >= platformLeftPos && tileLeftPos <= (platformLeftPos + platformLength)){
 
-                // Score if hit
-                if(tileLength < 5){
-                    positive++;
+                // if tile is fully contained by the platform
+                if(tileLeftPos + tileLength <= platformLeftPos + platformLength) {
+
+                    // Score based on tile size
+                    if(isSmallTile()){
+                        positive++;
+                    } else {
+                        negative++;
+                    }
                 } else {
-                    negative++;
+                    // Else: if not fully contained by platform
+                    if(isSmallTile()){
+                        negative++;
+                    } else {
+                        positive++;
+                    }
                 }
 
             } else {
-                // score if not hit
-                if(tileLength < 5){
-                    positive++;
-                } else {
+                // Else: if not inside at all
+                if(isSmallTile()){
                     negative++;
+                } else {
+                    positive++;
                 }
             }
 
@@ -99,6 +110,9 @@ public class Tracker {
         return (positive - negative) / (double)createTiles;
     }
 
+    public boolean isSmallTile() {
+        return tileLength < 5;
+    }
 
     public enum Movement {
         LEFT, RIGHT
