@@ -1,5 +1,6 @@
 package gameworlds.tracker;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -34,7 +35,14 @@ public class Tracker {
     }
 
     public List<Double> getSensory(){
-
+        List<Double> output = new LinkedList<>();
+        for (int i = platformLeftPos; i < platformLeftPos + platformLength; i++) {
+            if(i >= tileLeftPos && i <= tileLeftPos + tileLength)
+                output.add(1.0);
+            else
+                output.add(0.0);
+        }
+        return output;
     }
 
     public void newStep(Movement movement){
@@ -72,6 +80,7 @@ public class Tracker {
                 }
             }
 
+            createNewTile();
         }
 
 
@@ -81,6 +90,10 @@ public class Tracker {
         tileLength = random.nextInt(6) + 1;
         tileLeftPos = random.nextInt(width - tileLength);
         tileHeightPos = height;
+    }
+
+    public double getStats(){
+        return positive / (double)(positive + negative);
     }
 
 
