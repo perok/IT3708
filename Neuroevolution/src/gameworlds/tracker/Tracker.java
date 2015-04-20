@@ -64,7 +64,7 @@ public class Tracker {
 
         if (tileHeightPos < 1) {
             // Check if touching platform
-            if(tileLeftPos >= platformLeftPos && tileLeftPos <= (platformLeftPos + platformLength)){
+            if((tileLeftPos >= platformLeftPos && tileLeftPos <= (platformLeftPos + platformLength))){
 
                 // if tile is fully contained by the platform
                 if(tileLeftPos + tileLength <= platformLeftPos + platformLength) {
@@ -75,16 +75,9 @@ public class Tracker {
                     } else {
                         negative++;
                     }
-                } else {
-                    // Else: if not fully contained by platform
-                    if(isSmallTile()){
-                        negative++;
-                    } else {
-                        positive++;
-                    }
                 }
 
-            } else {
+            } else if(!(tileLeftPos + tileLength > platformLeftPos)) {
                 // Else: if not inside at all
                 if(isSmallTile()){
                     negative++;
