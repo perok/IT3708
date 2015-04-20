@@ -2,6 +2,7 @@ package project4;
 
 import algorithms.ea.statistics.GenerationStatistics;
 import algorithms.eann.IndividualBrain;
+import algorithms.ectrnn.IndividualCTRBrain;
 import gameworlds.flatland.Flatland;
 import gameworlds.flatland.Movement;
 import gameworlds.flatland.sensor.Items;
@@ -30,7 +31,7 @@ public class FXMLTableViewController {
     Canvas simulation;
 
     @FXML
-    TableView<IndividualBrain> tableView;
+    TableView<IndividualCTRBrain> tableView;
 
     @FXML
     Text txtIsRunning;
@@ -49,7 +50,7 @@ public class FXMLTableViewController {
 
     private GraphicsContext gc;
 
-    private ObservableList<IndividualBrain> data;
+    private ObservableList<IndividualCTRBrain> data;
 
     private AIController aiController;
 
@@ -130,7 +131,7 @@ public class FXMLTableViewController {
         aiRunner = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                IndividualBrain best = aiController.runOneEpoch();
+                IndividualCTRBrain best = aiController.runOneEpoch();
 
                 currentEpoch.set(aiController.getEpoch());
 
@@ -152,10 +153,10 @@ public class FXMLTableViewController {
         // Run simulation for one individual
         // ================================================
         tableView.setRowFactory(tv -> {
-                    TableRow<IndividualBrain> row = new TableRow<>();
+                    TableRow<IndividualCTRBrain> row = new TableRow<>();
                     row.setOnMouseClicked(event -> {
                         if (event.getClickCount() == 2 && (!row.isEmpty())) {
-                            IndividualBrain rowData = row.getItem();
+                            IndividualCTRBrain rowData = row.getItem();
 
                             if (simulationRunner != null)
                                 simulationRunner.stop();
@@ -177,7 +178,7 @@ public class FXMLTableViewController {
         isRunning.set(!isRunning.get());
     }
 
-    private AnimationTimer makeSimulationRunner(final IndividualBrain individual){
+    private AnimationTimer makeSimulationRunner(final IndividualCTRBrain individual){
 
         final LongProperty lastUpdate = new SimpleLongProperty();
         final long minUpdateInterval = 1000000000 / 10; // nanoseconds.

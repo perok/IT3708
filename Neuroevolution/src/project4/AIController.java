@@ -1,10 +1,7 @@
 package project4;
 
-import algorithms.eann.IndividualBrain;
-import algorithms.eann.Neuroevolution;
-import gameworlds.flatland.Flatland;
-import gameworlds.flatland.Movement;
-import gameworlds.flatland.sensor.Sensed;
+import algorithms.ectrnn.IndividualCTRBrain;
+import algorithms.ectrnn.Neuroevolution;
 import gameworlds.tracker.Tracker;
 
 import java.util.*;
@@ -16,7 +13,7 @@ import java.util.stream.IntStream;
  */
 public class AIController {
 
-    private List<IndividualBrain> population;
+    private List<IndividualCTRBrain> population;
     private int populationSize = 100;
     private int epoch = 0;
     private Neuroevolution neuroevolution;
@@ -24,10 +21,6 @@ public class AIController {
     // 1. Make a population
     // 2. Run population on game world
     // 3. Collect fitness underway
-
-
-    private Flatland currentScenario;
-
 
     public AIController() {
         neuroevolution = new Neuroevolution();
@@ -37,7 +30,7 @@ public class AIController {
         // ----------------------------------
         population = new LinkedList<>();
         IntStream.range(0, populationSize)
-                .forEach(i -> population.add(new IndividualBrain()));
+                .forEach(i -> population.add(new IndividualCTRBrain()));
 
         calculateFitnessOnPopulation();
     }
@@ -48,8 +41,8 @@ public class AIController {
         population
                 .stream()
                 // Make phenotypes - In case they have changed since evolution
-                .peek(IndividualBrain::buildPhenotypes)
-                .peek(IndividualBrain::rewireBrain)
+                .peek(IndividualCTRBrain::buildPhenotypes)
+                .peek(IndividualCTRBrain::rewireBrain)
                 // ----------------------------------
                 // Fitness function that run Tracker
                 // ----------------------------------
@@ -73,7 +66,7 @@ public class AIController {
 
 
 
-    public static Tracker.Movement helperIndividualFindMove(Tracker tracker, IndividualBrain individualBrain){
+    public static Tracker.Movement helperIndividualFindMove(Tracker tracker, IndividualCTRBrain individualBrain){
 
         // Run through brain
         List<Double> output = individualBrain.think(tracker.getSensory());
@@ -101,7 +94,7 @@ public class AIController {
     /**
      * Runs one epoch and returns the best individual
      */
-    public IndividualBrain runOneEpoch(){
+    public IndividualCTRBrain runOneEpoch(){
 
         // Run population through EANN
         population = neuroevolution.evolve(population, epoch++);
@@ -109,14 +102,14 @@ public class AIController {
         // Calculate the fitness
         calculateFitnessOnPopulation();
 
-        return population.stream().max(IndividualBrain::compareTo).get();
+        return population.stream().max(IndividualCTRBrain::compareTo).get();
     }
 
     static Comparator<Map.Entry<Integer, Double>> byValue = (entry1, entry2) -> entry1.getValue().compareTo(
             entry2.getValue());
 
 
-    public List<IndividualBrain> getPopulation() {
+    public List<IndividualCTRBrain> getPopulation() {
         return population;
     }
 

@@ -157,8 +157,6 @@ public class CTRNeuralNet {
         }
 
         return outputs;
-
-
     }
 
     private double layerweight(final NeuronLayer neuronLayer, final List<Double> inputs) {

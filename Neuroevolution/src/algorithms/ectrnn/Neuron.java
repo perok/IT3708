@@ -58,7 +58,8 @@ public class Neuron {
                     byte[] onebyte = new byte[1];
 
                     random.nextBytes(onebyte);
-                    setWeight(i, onebyte[0]);
+                    weightsByte.add(onebyte[0]);
+                    weights.add(createCorrectValueOnIndex(i, onebyte[0]));
                 });
     }
 
@@ -82,6 +83,10 @@ public class Neuron {
     public Double setWeight(int index, Byte value){
         weightsByte.set(index, value);
 
+        return weights.set(index, createCorrectValueOnIndex(index, value));
+    }
+
+    private double createCorrectValueOnIndex(int index, Byte value){
         double v;
 
         if(index == numberOfInputs - 1) // bias
@@ -93,7 +98,7 @@ public class Neuron {
         else // weight
             v = convert(value, lowerBoundWeight, higherBoundWeight);
 
-        return weights.set(index, v);
+        return v;
     }
 
     public double convert(byte value, int lower, int higher){
