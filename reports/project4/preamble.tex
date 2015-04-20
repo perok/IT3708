@@ -1,0 +1,26 @@
+% -*- root: main.tex -*-
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage{graphicx}
+\usepackage[norsk]{babel}
+\usepackage[utf8]{inputenx}
+\usepackage{csquotes}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{enumitem}
+
+\lstset{
+	breaklines=true,
+	extendedchars=true,
+    postbreak={\raisebox{0.5ex}[0ex][0ex]{\tiny\rotatebox[origin=c]{180}{\ensuremath\Lsh\space}}},
+	basicstyle=\footnotesize\ttfamily
+}
+
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+
+\def\labelitemi{--}
+\newcommand{\para}[1]{\paragraph{#1}\mbox{}\\}
