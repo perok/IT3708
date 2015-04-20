@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Created by PerØyvind on 20/04/2015.
+ * Created by Perï¿½yvind on 20/04/2015.
  */
 public class Tracker {
 
@@ -55,14 +55,22 @@ public class Tracker {
         if (tileHeightPos < 1) {
             // Check if capture
             if(tileLeftPos >= platformLeftPos && (tileLeftPos + tileLength) <= (platformLeftPos + platformLength)){
+
+                // Score if hit
                 if(tileLength < 5){
                     positive++;
                 } else {
                     negative++;
                 }
 
-            } else if()
-            // if not, avoided?
+            } else {
+                // score if not hit
+                if(tileLength < 5){
+                    positive++;
+                } else {
+                    negative++;
+                }
+            }
 
         }
 
