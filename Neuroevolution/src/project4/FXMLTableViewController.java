@@ -67,7 +67,7 @@ public class FXMLTableViewController {
     private AnimationTimer simulationRunner;
 
     // nanoseconds.
-    private LongProperty minSimulationUpdateInterval = new SimpleLongProperty(1000000000 / 20);
+    private LongProperty minSimulationUpdateInterval = new SimpleLongProperty(100000000);
 
 
 
