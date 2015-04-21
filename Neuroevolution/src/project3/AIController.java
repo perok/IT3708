@@ -138,4 +138,13 @@ public class AIController {
     public int getEpoch() {
         return epoch;
     }
+
+    public int getNumberOfElites() {
+        return neuroevolution.getElitism();
+    }
+
+    public void setNumberOfElites(int elites) {
+        neuroevolution.setElitism(elites);
+    }
+
 }

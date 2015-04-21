@@ -82,7 +82,18 @@
             <Text fx:id="txtCurrentEpoch" text="0"/>
         </HBox>
 
-        <TextField fx:id="txtfSimulationInterval"/>
+        <HBox spacing="10" alignment="top_right">
+            <Text text="Number of elites:" />
+            <Separator></Separator>
+            <TextField fx:id="numberOfEliteIndividuals"/>
+        </HBox>
+
+        <HBox spacing="10" alignment="top_right">
+            <Text text="Simulation interval:" />
+            <Separator></Separator>
+            <TextField fx:id="txtfSimulationInterval"/>
+        </HBox>
+
     </VBox>
 
 

@@ -48,6 +48,9 @@ public class FXMLTableViewController {
     @FXML
     LineChart<Number, Number> lcAiStatistics;
 
+    @FXML
+    TextField numberOfEliteIndividuals;
+
     private GraphicsContext gc;
 
     private ObservableList<IndividualCTRBrain> data;
@@ -87,6 +90,7 @@ public class FXMLTableViewController {
         cBestFitness = new SimpleDoubleProperty(0);
         cTotalFitness = new SimpleDoubleProperty(0);
 
+        numberOfEliteIndividuals.setText("" + aiController.getNumberOfElites());
 
         txtfSimulationInterval.setText(minSimulationUpdateInterval.getValue().toString());
 
@@ -117,6 +121,15 @@ public class FXMLTableViewController {
 
         txtfSimulationInterval.textProperty().addListener(((observable, oldValue, newValue) -> {
             minSimulationUpdateInterval.set(Long.valueOf(newValue));
+        }));
+
+        numberOfEliteIndividuals.textProperty().addListener(((observable, oldValue, newValue) -> {
+            try {
+                aiController.setNumberOfElites(Integer.valueOf(newValue, 10));
+            }
+            catch(NumberFormatException e) {
+                System.out.println("Invalid input for elitism.");
+            }
         }));
 
         tableView.setItems(data);
