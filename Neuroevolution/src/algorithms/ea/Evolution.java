@@ -346,6 +346,8 @@ public class Evolution<T extends Individual> {
         List<T> newPopulation = population.stream().sorted().collect(Collectors.toList()).subList(0, eliteism);
         System.out.println("Number of elites: " + eliteism);
 
+        population.removeAll(newPopulation);
+
         // 1. Adult selection - The fight for a place! Survival
         newPopulation.addAll(performAdultSelection(population, generation));
         System.out.println("\tAdult selection performed. New population to carry on: " + newPopulation.size());
