@@ -27,6 +27,8 @@ public class Tracker {
     int platformLeftPos;
     int platformLength = 5;
 
+    boolean hasPositiveTurn = false;
+
     public Tracker(){
         random = new Random();
 
@@ -77,11 +79,13 @@ public class Tracker {
                     if (tileLeftPos >= platformLeftPos && tileRightPos <= platformLeftPos + platformLength) {
                         System.out.println("AWARD");
                         positive += 1;
+                        hasPositiveTurn = true;
                     }
                 } else {
                     System.out.println("PENALTY");
                     // If touching: Always give a penalty on large tiles
                     negative += 1;
+                    hasPositiveTurn = false;
                 }
 
             } else if(isTileLeftPosInside || isTileRightPosInside) {
@@ -89,14 +93,16 @@ public class Tracker {
                 // Else if part of tile is inside platform
 
                     negative += 5;
-
+                    hasPositiveTurn = false;
             } else {
                 // Else: if not inside at all
                 if(isSmallTile()){
                     System.out.println("PENALTY");
                     negative += 1;
+                    hasPositiveTurn = false;
                 } else {
                     positive += 1;
+                    hasPositiveTurn = true;
                 }
             }
 
@@ -156,4 +162,8 @@ public class Tracker {
     public int getCurrentTimestep() {
         return currentTimestep;
     }
+
+    public boolean isAtBottom() { return getTileHeightPos() < 1; }
+
+    public boolean hasPositiveTurn() { return hasPositiveTurn;}
 }
