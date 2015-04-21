@@ -27,6 +27,8 @@ public class Tracker {
     int platformLeftPos;
     int platformLength = 5;
 
+    boolean wrapAround = false;
+
     public Tracker(){
         random = new Random();
 
@@ -37,7 +39,16 @@ public class Tracker {
     public List<Double> getSensory(){
         List<Double> output = new LinkedList<>();
         for (int i = platformLeftPos; i < platformLeftPos + platformLength; i++) {
-            if(i >= tileLeftPos && i <= tileLeftPos + tileLength)
+
+            int tileUpperLimit = tileLeftPos + tileLength;
+            int i_tmp = i;
+
+            if(wrapAround) {
+                i_tmp = (((i % width) + width) % width);
+                tileUpperLimit = (((tileUpperLimit % width) + width) % width);
+            }
+
+            if(i_tmp >= tileLeftPos && i_tmp <= tileUpperLimit)
                 output.add(1.0);
             else
                 output.add(0.0);
@@ -51,13 +62,16 @@ public class Tracker {
         // Move platform
         switch (movement) {
             case LEFT:
-                if (platformLeftPos > 0)
+                if(wrapAround || (platformLeftPos > 0))
                     platformLeftPos--;
                 break;
             case RIGHT:
-                if (platformLeftPos + platformLength < width)
+                if(wrapAround || (platformLeftPos + platformLength < width))
                     platformLeftPos++;
+                break;
         }
+        if(wrapAround)
+            platformLeftPos = (((platformLeftPos % width) + width) % width);
 
         // Move falling tile. If crash then register result and start again.
         tileHeightPos--;
@@ -92,10 +106,17 @@ public class Tracker {
 
     }
 
-    private void createNewTile(){
+    private void createNewTile() {
         createTiles++;
         tileLength = random.nextInt(6) + 1;
-        tileLeftPos = random.nextInt(width - tileLength);
+
+        if (wrapAround) {
+            tileLeftPos = random.nextInt(width);
+            tileLeftPos = (((tileLeftPos % width) + width) % width);
+        } else {
+            tileLeftPos = random.nextInt(width - tileLength);
+        }
+
         tileHeightPos = height;
     }
 
@@ -142,4 +163,8 @@ public class Tracker {
     public int getCurrentTimestep() {
         return currentTimestep;
     }
+
+    public boolean isWrapAround() { return wrapAround; }
+
+    public void setWrapAround(boolean wrapAround) { this.wrapAround = wrapAround; }
 }

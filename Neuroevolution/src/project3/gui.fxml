@@ -11,6 +11,7 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.CheckBox?>
 <GridPane alignment="CENTER" hgap="10.0" vgap="10.0"
           xmlns:fx="http://javafx.com/fxml"
           prefWidth="800"
@@ -87,6 +88,5 @@
             <Text fx:id="txtCurrentEpoch" text="0"/>
         </HBox>
     </VBox>
-
 
 </GridPane>
