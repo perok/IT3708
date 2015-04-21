@@ -63,26 +63,39 @@ public class Tracker {
         tileHeightPos--;
 
         if (tileHeightPos < 1) {
-            // Check if touching platform
-            if((tileLeftPos >= platformLeftPos && tileLeftPos <= (platformLeftPos + platformLength))){
 
-                // if tile is fully contained by the platform
-                if(tileLeftPos + tileLength <= platformLeftPos + platformLength) {
+            boolean isTileLeftPosInside = tileLeftPos >= platformLeftPos && tileLeftPos <= platformRightPos;
+            boolean isTileRightPosInside = tileRightPos >= platformLeftPos && tileRightPos <= platformRightPos;
 
-                    // Score based on tile size
-                    if(isSmallTile()){
-                        positive++;
-                    } else {
-                        negative++;
+            // Check if tile fully contained by platform
+            if(isTileLeftPosInside && isTileRightPosInside){
+                if(isSmallTile()) {
+                    if (tileLeftPos >= platformLeftPos && tileRightPos <= platformLeftPos + platformLength) {
+                        positive += 10;
+                        hasPositiveTurn = true;
                     }
+                } else {
+                    // If touching: Always give a penalty on large tiles
+                    negative += 10;
+                    hasPositiveTurn = false;
                 }
 
-            } else if(!(tileLeftPos + tileLength > platformLeftPos)) {
+            } else if(isTileLeftPosInside || isTileRightPosInside) {
+                // Else if part of tile is inside platform
+                if(isSmallTile())
+                    negative += 5;
+                else
+                    negative += 10;
+                hasPositiveTurn = false;
+            } else {
                 // Else: if not inside at all
                 if(isSmallTile()){
-                    negative++;
+                    negative += 10;
+                    hasPositiveTurn = false;
                 } else {
-                    positive++;
+                    positive += 10;
+                    hasPositiveTurn = true;
+
                 }
             }
 
@@ -100,7 +113,7 @@ public class Tracker {
     }
 
     public double getStats(){
-        return (positive - negative) / (double)createTiles;
+        return (positive - negative) / (double)(createTiles * 10);
     }
 
     public boolean isSmallTile() {
