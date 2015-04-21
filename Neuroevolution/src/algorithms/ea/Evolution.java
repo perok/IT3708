@@ -19,7 +19,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.stream.Collectors;
 
 /**
- * Created by PerØyvind on 05/03/2015.
+ * Created by Perï¿½yvind on 05/03/2015.
  *
  1. A population of potential solutions (i.e. population) all represented in some low-level
  genotypic form such as binary vectors.
@@ -114,7 +114,7 @@ public class Evolution<T extends Individual> {
 
 //            All previous adults die, but m (the maximum size of the adult pool) is smaller
 //            than n (the number of children). Hence, the children must compete among themselves for the m adult
-//            spots, so selection pressure is significant. This is also known as (µ, ?) selection, where µ and ? are sizes
+//            spots, so selection pressure is significant. This is also known as (ï¿½, ?) selection, where ï¿½ and ? are sizes
 //            of the adult and child pools, respectively.
             case MIXING:
                 List<T> rofl = population.stream()
@@ -132,7 +132,7 @@ public class Evolution<T extends Individual> {
 //            The m adults from the previous generation do not die, so they and the n
 //            children compete in a free-for-all for the m adult spots in the next generation. Here, selection pressure
 //            on juveniles is extremely high, since they are competing with some of the best individuals that have
-//            evolved so far, regardless of their age. This is also known as (µ + ?) selection, where the plus indicates
+//            evolved so far, regardless of their age. This is also known as (ï¿½ + ?) selection, where the plus indicates
 //            the mixing of adults and children during competition.
             case OVER_PRODUCTION:
                 return population.stream()
@@ -343,10 +343,11 @@ public class Evolution<T extends Individual> {
      */
     public List<T> nextEpoch(List<T> population, int generation) {
         // 0. Eliteism. Take out n best and send straight to mating
+        List<T> newPopulation = population.stream().sorted().collect(Collectors.toList()).subList(0, eliteism);
+        System.out.println("Number of elites: " + eliteism);
 
         // 1. Adult selection - The fight for a place! Survival
-        List<T> newPopulation = performAdultSelection(population, generation);
-
+        newPopulation.addAll(performAdultSelection(population, generation));
         System.out.println("\tAdult selection performed. New population to carry on: " + newPopulation.size());
 
         // 2. Parent selection - Who get to mate of the survivors

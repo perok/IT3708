@@ -17,12 +17,13 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import math.linnalg.Vector2;
 
 /**
- * Created by PerØyvind on 18/04/2015.
+ * Created by Perï¿½yvind on 18/04/2015.
  */
 public class FXMLTableViewController {
     @FXML
@@ -46,6 +47,9 @@ public class FXMLTableViewController {
     @FXML
     LineChart<Number, Number> lcAiStatistics;
 
+    @FXML
+    TextField numberOfEliteIndividuals;
+
     private GraphicsContext gc;
 
     private ObservableList<IndividualBrain> data;
@@ -64,7 +68,6 @@ public class FXMLTableViewController {
 
     private AnimationTimer simulationRunner;
 
-
     /**
      * Run by JavaFX
      */
@@ -80,6 +83,8 @@ public class FXMLTableViewController {
 
         cBestFitness = new SimpleDoubleProperty(0);
         cTotalFitness = new SimpleDoubleProperty(0);
+
+        numberOfEliteIndividuals.setText("" + aiController.getNumberOfElites());
 
         data = FXCollections.observableArrayList(aiController.getPopulation());
 
@@ -104,6 +109,15 @@ public class FXMLTableViewController {
                 aiRunner.start();
             else
                 aiRunner.stop();
+        }));
+
+        numberOfEliteIndividuals.textProperty().addListener(((observable, oldValue, newValue) -> {
+            try {
+                aiController.setNumberOfElites(Integer.valueOf(newValue, 10));
+            }
+            catch(NumberFormatException e) {
+                System.out.println("Invalid input for elitism.");
+            }
         }));
 
         tableView.setItems(data);
@@ -202,6 +216,10 @@ public class FXMLTableViewController {
             }
         };
 }
+    @FXML
+    private void toggleStaticWorlds(ActionEvent event) {
+        aiController.toggleStaticWorlds();
+    }
 
 
     private void redraw(Items[][] world, Vector2 agentPosition) {

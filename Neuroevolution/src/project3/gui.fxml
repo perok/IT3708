@@ -11,6 +11,9 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.TextField?>
+
 <GridPane alignment="CENTER" hgap="10.0" vgap="10.0"
           xmlns:fx="http://javafx.com/fxml"
           prefWidth="800"
@@ -76,6 +79,8 @@
     GridPane.rowIndex="0">
         <Button text="Toggle Darwinism" onAction="#startAi"/>
 
+        <CheckBox text="Static worlds" onAction="#toggleStaticWorlds"/>
+
         <HBox spacing="10" alignment="top_right">
             <Text text="Is running:"/>
             <Text fx:id="txtIsRunning" text="False"/>
@@ -86,7 +91,13 @@
             <Separator ></Separator>
             <Text fx:id="txtCurrentEpoch" text="0"/>
         </HBox>
-    </VBox>
 
+        <HBox spacing="10" alignment="top_right">
+            <Text text="Number of elites:" />
+            <Separator></Separator>
+            <TextField fx:id="numberOfEliteIndividuals"/>
+        </HBox>
+
+    </VBox>
 
 </GridPane>

@@ -27,6 +27,8 @@ public class Tracker {
     int platformLeftPos;
     int platformLength = 5;
 
+    boolean wrapAround = false;
+
     public Tracker(){
         random = new Random();
 
@@ -37,7 +39,16 @@ public class Tracker {
     public List<Double> getSensory(){
         List<Double> output = new LinkedList<>();
         for (int i = platformLeftPos; i < platformLeftPos + platformLength; i++) {
-            if(i >= tileLeftPos && i <= tileLeftPos + tileLength)
+
+            int tileUpperLimit = tileLeftPos + tileLength;
+            int i_tmp = i;
+
+            if(wrapAround) {
+                i_tmp = (((i % width) + width) % width);
+                tileUpperLimit = (((tileUpperLimit % width) + width) % width);
+            }
+
+            if(i_tmp >= tileLeftPos && i_tmp <= tileUpperLimit)
                 output.add(1.0);
             else
                 output.add(0.0);
@@ -51,38 +62,50 @@ public class Tracker {
         // Move platform
         switch (movement) {
             case LEFT:
-                if (platformLeftPos > 0)
+                if(wrapAround || (platformLeftPos > 0))
                     platformLeftPos--;
                 break;
             case RIGHT:
-                if (platformLeftPos + platformLength < width)
+                if(wrapAround || (platformLeftPos + platformLength < width))
                     platformLeftPos++;
+                break;
         }
+        if(wrapAround)
+            platformLeftPos = (((platformLeftPos % width) + width) % width);
 
         // Move falling tile. If crash then register result and start again.
         tileHeightPos--;
 
         if (tileHeightPos < 1) {
-            // Check if touching platform
-            if((tileLeftPos >= platformLeftPos && tileLeftPos <= (platformLeftPos + platformLength))){
 
-                // if tile is fully contained by the platform
-                if(tileLeftPos + tileLength <= platformLeftPos + platformLength) {
+            int tileRightPos = tileLeftPos + tileLength - 1;
+            int platformRightPos = platformLeftPos + platformLength - 1;
 
-                    // Score based on tile size
-                    if(isSmallTile()){
-                        positive++;
-                    } else {
-                        negative++;
+            boolean isTileLeftPosInside = tileLeftPos >= platformLeftPos && tileLeftPos <= platformRightPos;
+            boolean isTileRightPosInside = tileRightPos >= platformLeftPos && tileRightPos <= platformRightPos;
+
+            // Check if tile fully contained by platform
+            if(isTileLeftPosInside && isTileRightPosInside){
+                if(isSmallTile()) {
+                    if (tileLeftPos >= platformLeftPos && tileRightPos <= platformLeftPos + platformLength) {
+                        positive += 1;
                     }
+                } else {
+                    // If touching: Always give a penalty on large tiles
+                    negative += 1;
                 }
 
-            } else if(!(tileLeftPos + tileLength > platformLeftPos)) {
+            } else if(isTileLeftPosInside || isTileRightPosInside) {
+                // Else if part of tile is inside platform
+
+                    negative += 5;
+
+            } else {
                 // Else: if not inside at all
                 if(isSmallTile()){
-                    negative++;
+                    negative += 1;
                 } else {
-                    positive++;
+                    positive += 1;
                 }
             }
 
@@ -92,10 +115,17 @@ public class Tracker {
 
     }
 
-    private void createNewTile(){
+    private void createNewTile() {
         createTiles++;
         tileLength = random.nextInt(6) + 1;
-        tileLeftPos = random.nextInt(width - tileLength);
+
+        if (wrapAround) {
+            tileLeftPos = random.nextInt(width);
+            tileLeftPos = (((tileLeftPos % width) + width) % width);
+        } else {
+            tileLeftPos = random.nextInt(width - tileLength);
+        }
+
         tileHeightPos = height;
     }
 
@@ -142,4 +172,8 @@ public class Tracker {
     public int getCurrentTimestep() {
         return currentTimestep;
     }
+
+    public boolean isWrapAround() { return wrapAround; }
+
+    public void setWrapAround(boolean wrapAround) { this.wrapAround = wrapAround; }
 }
