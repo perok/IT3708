@@ -18,6 +18,10 @@ public class AIController {
     private int epoch = 0;
     private Neuroevolution neuroevolution;
 
+    private boolean isWrapAround = false;
+
+    private Tracker tracker;
+
     // 1. Make a population
     // 2. Run population on game world
     // 3. Collect fitness underway
@@ -48,7 +52,8 @@ public class AIController {
                 // ----------------------------------
                 .peek(individualBrain -> {
                     // Setup a new Tracker
-                    Tracker tracker = new Tracker();
+                    tracker = new Tracker();
+                    tracker.setWrapAround(isWrapAround);
 
                     // Run Tracker with 600 iteration
                     for (int i = 0; i < 600; i++) {
@@ -125,4 +130,12 @@ public class AIController {
     public void setNumberOfElites(int elites) {
         neuroevolution.setElitism(elites);
     }
+
+    public void toggleWrapAround() {
+        isWrapAround = !isWrapAround;
+        tracker.setWrapAround(isWrapAround);
+    }
+
+    public boolean isWrapAround() { return isWrapAround; }
+
 }

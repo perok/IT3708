@@ -196,6 +196,10 @@ public class FXMLTableViewController {
         );
     }
 
+    @FXML
+    private void toggleWrapAround(ActionEvent event) {
+        aiController.toggleWrapAround();
+    }
 
     @FXML
     protected void startAi(ActionEvent event) {
@@ -210,6 +214,9 @@ public class FXMLTableViewController {
 
             @Override
             public void handle(long now) {
+
+                scenario.setWrapAround(aiController.isWrapAround());
+
                 int cStep = scenario.getCurrentTimestep();
 
                 if (now - lastUpdate.get() > minSimulationUpdateInterval.get()) {
@@ -235,13 +242,25 @@ public class FXMLTableViewController {
         int xSize = (int)(simulation.getWidth() / tracker.getWidth());
         int ySize = (int)(simulation.getHeight() / tracker.getHeight());
 
+        int trackerWidth =  tracker.getWidth();
+
         if(tracker.getTileLength() > 4) {
             gc.setFill(Color.RED);
         } else {
             gc.setFill(Color.GREEN);
         }
 
-        gc.fillRect(tracker.getTileLeftPos() * xSize, (tracker.getHeight() - tracker.getTileHeightPos()) * ySize, tracker.getTileLength() * xSize, ySize);
+        for(int i = 0; i < tracker.getTileLength(); i++) {
+
+            int i_tmp = tracker.getTileLeftPos() + i;
+
+            if(tracker.isWrapAround()) {
+                i_tmp = (((i_tmp % trackerWidth) + trackerWidth) % trackerWidth);
+                gc.fillRect(i_tmp * xSize, (tracker.getHeight() - tracker.getTileHeightPos()) * ySize, xSize, ySize);
+            } else {
+                gc.fillRect(i_tmp * xSize, (tracker.getHeight() - tracker.getTileHeightPos()) * ySize, xSize, ySize);
+            }
+        }
 
         gc.setFill(Color.YELLOW);
         gc.fillRect(tracker.getPlatformLeftPos() * xSize, tracker.getHeight() * ySize, tracker.getPlatformLength() * xSize, ySize);
