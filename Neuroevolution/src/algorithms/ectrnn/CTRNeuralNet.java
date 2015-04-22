@@ -102,7 +102,7 @@ public class CTRNeuralNet {
         // The results
         List<Double> outputs = new LinkedList<>();
 
-        int cWeight;
+
 
         // Incorrect amount if inputs. Return empty
         if(inputs.size() != numInputs) {
@@ -121,7 +121,7 @@ public class CTRNeuralNet {
 
             outputs = new LinkedList<>();//.clear();
 
-            cWeight = 0;
+            int cWeight = 0;
 
             // ================================================
             // Traverse neurons

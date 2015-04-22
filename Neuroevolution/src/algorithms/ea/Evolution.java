@@ -347,14 +347,14 @@ public class Evolution<T extends Individual> {
         // 1. Adult selection - The fight for a place! Survival
         List<T> newPopulation = performAdultSelection(population, generation);
 
-        System.out.println("\tAdult selection performed. New population to carry on: " + newPopulation.size());
+        //System.out.println("\tAdult selection performed. New population to carry on: " + newPopulation.size());
 
         // 2. Parent selection - Who get to mate of the survivors
         List<T> newChildren = performMating(newPopulation).stream()
                 .peek(individual -> individual.mutate(mutatation))
                 .collect(Collectors.toList());
 
-        System.out.println("\tMating pool created. Containing: " + newChildren.size());
+        //System.out.println("\tMating pool created. Containing: " + newChildren.size());
 
         newPopulation.addAll(newChildren);
 

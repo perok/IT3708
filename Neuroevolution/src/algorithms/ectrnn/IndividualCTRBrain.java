@@ -2,7 +2,6 @@ package algorithms.ectrnn;
 
 import algorithms.ea.individual.Genotype;
 import algorithms.ea.individual.Individual;
-import helpers.Conversion;
 
 import java.util.List;
 import java.util.stream.Collectors;
