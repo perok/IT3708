@@ -74,10 +74,12 @@ public class Tracker {
         // Move platform
         switch (movement) {
             case LEFT:
-                platformLeftPos--;
+                if(wrapAround || (platformLeftPos > 0))
+                    platformLeftPos--;
                 break;
             case RIGHT:
-                platformLeftPos++;
+                if(wrapAround || (platformLeftPos + platformLength < width))
+                    platformLeftPos++;
                 break;
         }
 
