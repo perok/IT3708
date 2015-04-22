@@ -27,7 +27,11 @@ public class AIController {
     // 3. Collect fitness underway
 
     public AIController() {
+
+        IndividualCTRBrain.outputLayers = 3;
+
         reset();
+
     }
 
     public void reset() {
@@ -85,8 +89,10 @@ public class AIController {
         // Find out what to do with output
         Map<Integer, Double> list = new HashMap<>();
         //System.out.println("Val1: " + output.get(0) + " Val2: " + output.get(1));
-        list.put(0, output.get(0));
-        list.put(1, output.get(1));
+
+        for(int i = 0; i < IndividualCTRBrain.outputLayers; i++) {
+            list.put(i, output.get(i));
+        }
 
         Optional<Map.Entry<Integer, Double>> val = list.entrySet().stream()
                 .sorted(byValue.reversed())
@@ -97,6 +103,8 @@ public class AIController {
                 return Tracker.Movement.LEFT;
             case 1:
                 return Tracker.Movement.RIGHT;
+            case 2:
+                return Tracker.Movement.PULLDOWN;
             default:
                 System.err.println("WTF");
                 return Tracker.Movement.LEFT;

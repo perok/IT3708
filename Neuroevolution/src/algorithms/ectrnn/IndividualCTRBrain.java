@@ -33,7 +33,7 @@ public class IndividualCTRBrain extends Individual<Byte>{
         // Hidden Layers: 1
         // Neuron in each hidden layer: 2
         // ----------------------------------
-        brain = new CTRNeuralNet(inputLayers, 2, 1, outputLayers);
+        brain = new CTRNeuralNet(inputLayers, outputLayers, 1, 2);
 
         // Get brain data and make genotype of it
         // todo getWeights must return correct Byte
