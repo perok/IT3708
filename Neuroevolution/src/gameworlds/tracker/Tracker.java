@@ -34,11 +34,12 @@ public class Tracker {
     GameType gameType = GameType.NORMAL;
     Color background = Color.WHITE;
 
-    boolean hasPositiveTurn = false;
+    int platformState;
 
     public Tracker(GameType gameType){
         this.gameType = gameType;
         random = new Random();
+        this.platformState = 0;
 
         platformLeftPos = random.nextInt(width - platformLength);
 
@@ -77,6 +78,8 @@ public class Tracker {
     public void newStep(Movement movement){
         currentTimestep++;
 
+        platformLeftPos = (((platformLeftPos % width) + width) % width);
+
         // Move platform
         switch (movement) {
             case LEFT:
@@ -89,8 +92,6 @@ public class Tracker {
                 break;
         }
 
-        platformLeftPos = (((platformLeftPos % width) + width) % width);
-
         // Move falling tile. If crash then register result and start again.
         tileHeightPos--;
 
@@ -102,37 +103,33 @@ public class Tracker {
             boolean isTileLeftPosInside = tileLeftPos >= platformLeftPos && tileLeftPos <= platformRightPos;
             boolean isTileRightPosInside = tileRightPos >= platformLeftPos && tileRightPos <= platformRightPos;
 
+            // platformState: 0 - neutral, 1 - positive, 2 - negative
+
             // Check if tile fully contained by platform
             if(isTileLeftPosInside && isTileRightPosInside){
-                System.out.println("INSIDE: YES");
                 if(isSmallTile()) {
                     if (tileLeftPos >= platformLeftPos && tileRightPos <= platformLeftPos + platformLength) {
-                        System.out.println("AWARD");
-                        positive += 1;
-                        hasPositiveTurn = true;
+                        positive++;
+                        platformState = 1;
                     }
                 } else {
-                    System.out.println("PENALTY");
                     // If touching: Always give a penalty on large tiles
-                    negative += 1;
-                    hasPositiveTurn = false;
+                    negative++;
+                    platformState = 2;
                 }
 
             } else if(isTileLeftPosInside || isTileRightPosInside) {
-                System.out.println("INSIDE: HALF");
                 // Else if part of tile is inside platform
 
-                    negative += 5;
-                    hasPositiveTurn = false;
+                platformState = 0;
             } else {
                 // Else: if not inside at all
                 if(isSmallTile()){
-                    System.out.println("PENALTY");
-                    negative += 1;
-                    hasPositiveTurn = false;
+                    negative++;
+                    platformState = 2;
                 } else {
-                    positive += 1;
-                    hasPositiveTurn = true;
+                    positive++;
+                    platformState = 1;
                 }
             }
 
@@ -208,6 +205,6 @@ public class Tracker {
 
     public boolean isAtBottom() { return getTileHeightPos() < 1; }
 
-    public boolean hasPositiveTurn() { return hasPositiveTurn;}
+    public int getPlatformState() { return platformState;}
 
 }

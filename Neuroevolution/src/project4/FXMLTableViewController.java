@@ -243,14 +243,12 @@ public class FXMLTableViewController {
         drawWrappedRectangle(tracker.getTileLeftPos(), tracker.getTileLength(), tracker.getHeight() - tracker.getTileHeightPos(), width, xSize, ySize);
 
         // Shows platform as green if the previous turn was positive, green when negative, else yellow.
-        if(!tracker.isAtBottom()) {
-            if(tracker.hasPositiveTurn())
-                gc.setFill(Color.GREEN);
-            else
-                gc.setFill(Color.RED);
-        } else {
+        if(tracker.getPlatformState() == 0)
             gc.setFill(Color.YELLOW);
-        }
+        else if(tracker.getPlatformState() == 1)
+            gc.setFill(Color.GREEN);
+        else if(tracker.getPlatformState() == 2)
+            gc.setFill(Color.RED);
 
         drawWrappedRectangle(tracker.getPlatformLeftPos(), tracker.getPlatformLength(), tracker.getHeight(), width, xSize, ySize);
     }
