@@ -342,21 +342,17 @@ public class Evolution<T extends Individual> {
      * @return
      */
     public List<T> nextEpoch(List<T> population, int generation) {
-        // 0. Eliteism. Take out n best and send straight to mating
+        List<T> pool = new ArrayList<>(population);
 
-        // 1. Adult selection - The fight for a place! Survival
-        List<T> newPopulation = performAdultSelection(population, generation);
-
-        //System.out.println("\tAdult selection performed. New population to carry on: " + newPopulation.size());
-
-        // 2. Parent selection - Who get to mate of the survivors
-        List<T> newChildren = performMating(newPopulation).stream()
+        // 1. Parent selection - Who get to mate of the survivors
+        List<T> newChildren = performMating(population).stream()
                 .peek(individual -> individual.mutate(mutatation))
                 .collect(Collectors.toList());
 
-        //System.out.println("\tMating pool created. Containing: " + newChildren.size());
+        pool.addAll(newChildren);
 
-        newPopulation.addAll(newChildren);
+        // 2. Adult selection - The fight for a place! Survival
+        List<T> newPopulation = performAdultSelection(pool, generation);
 
         // todo mutate for all, or only children
         return newPopulation;
