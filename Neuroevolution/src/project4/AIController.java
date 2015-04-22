@@ -20,7 +20,7 @@ public class AIController {
     private List<IndividualCTRBrain> population;
     private int populationSize = 100;
     private int epoch = 0;
-    private Evolution<IndividualCTRBrain> evolution;
+    private Evolution evolution;
 
     Tracker.GameType gameType = Tracker.GameType.NORMAL;
 

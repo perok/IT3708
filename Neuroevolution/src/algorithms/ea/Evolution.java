@@ -401,33 +401,33 @@ public class Evolution<T extends Individual> {
     // Getters and setters
     // -------------------------------------
 
-    public Evolution setAdultSelectionsStrategy(ParentSelections selectionsStrategy) {
+    public Evolution<T> setAdultSelectionsStrategy(ParentSelections selectionsStrategy) {
         this.selectionsStrategy = selectionsStrategy;
 
         return this;
     }
 
-    public Evolution setMatingStrategy(MatingTechniques matingStrategy) {
+    public Evolution<T> setMatingStrategy(MatingTechniques matingStrategy) {
         this.matingStrategy = matingStrategy;
         return this;
     }
 
-    public Evolution setMutation(IMutation mutatation) {
+    public Evolution<T> setMutation(IMutation mutatation) {
         this.mutatation = mutatation;
         return this;
     }
 
-    public Evolution setCrossover(ICrossover crossover) {
+    public Evolution<T> setCrossover(ICrossover crossover) {
         this.crossover = crossover;
         return this;
     }
 
-    public Evolution setPARENT_POOL_SIZE(int PARENT_POOL_SIZE) {
+    public Evolution<T> setPARENT_POOL_SIZE(int PARENT_POOL_SIZE) {
         this.PARENT_POOL_SIZE = PARENT_POOL_SIZE;
         return this;
     }
 
-    public Evolution setCHIlDREN_POOL_SIZE(int CHIlDREN_POOL_SIZE) {
+    public Evolution<T> setCHIlDREN_POOL_SIZE(int CHIlDREN_POOL_SIZE) {
         this.CHIlDREN_POOL_SIZE = CHIlDREN_POOL_SIZE;
         return this;
 

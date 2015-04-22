@@ -27,7 +27,7 @@ public class AIController {
     private List<IndividualBrain> population;
     private int populationSize = 100;
     private int epoch = 0;
-    private Evolution<IndividualBrain> evolution;
+    private Evolution evolution;
 
     // 1. Make a population
     // 2. Run population on game world
