@@ -87,7 +87,7 @@
               fx:id="txtCurrentEpoch" text="0"/>
 
         <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="2"
-                text="Static worlds" onAction="#toggleStaticWorlds"/>
+                fx:id="cbStaticWorlds" text="Static worlds" onAction="#toggleStaticWorlds"/>
 
         <Button GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.columnSpan="2"
                 text="Toggle Darwinism" onAction="#startAi"/>

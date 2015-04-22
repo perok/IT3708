@@ -5,6 +5,7 @@ import algorithms.eann.IndividualBrain;
 import gameworlds.flatland.Flatland;
 import gameworlds.flatland.Movement;
 import gameworlds.flatland.sensor.Sensed;
+import javafx.fxml.FXML;
 
 
 import java.util.*;
@@ -17,6 +18,8 @@ import java.util.stream.IntStream;
 public class AIController {
 
     public static int globalScenariosToRun = 1;
+    public static boolean globalIsStatic = false;
+
 
     private List<IndividualBrain> population;
     private int populationSize = 100;
@@ -29,7 +32,6 @@ public class AIController {
 
 
     private Flatland currentScenario;
-    private boolean isStatic = false;
 
     public AIController() {
         neuroevolution = new Neuroevolution();
@@ -48,7 +50,7 @@ public class AIController {
 
 
     private void calculateFitnessOnPopulation(){
-        if(isStatic)
+        if(globalIsStatic)
             currentScenario = new Flatland(currentScenario);
         else
             currentScenario = new Flatland(10, 1/3.0, 1/3.0);
@@ -134,8 +136,6 @@ public class AIController {
 
     static Comparator<Map.Entry<Integer, Double>> byValue = (entry1, entry2) -> entry1.getValue().compareTo(
             entry2.getValue());
-
-    public void toggleStaticWorlds() { this.isStatic = !this.isStatic; }
 
     public List<IndividualBrain> getPopulation() {
         return population;
