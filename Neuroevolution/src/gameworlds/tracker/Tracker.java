@@ -91,7 +91,7 @@ public class Tracker {
                     platformLeftPos++;
                 break;
             case PULLDOWN:
-                tileHeightPos = 2;
+                tileHeightPos = 1;
                 break;
         }
 
