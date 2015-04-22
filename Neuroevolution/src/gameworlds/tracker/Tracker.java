@@ -90,6 +90,9 @@ public class Tracker {
                 if((platformLeftPos + platformLength < width) || (!gameType.equals(GameType.NOWRAP)))
                     platformLeftPos++;
                 break;
+            case PULLDOWN:
+                tileHeightPos = 2;
+                break;
         }
 
         // Move falling tile. If crash then register result and start again.

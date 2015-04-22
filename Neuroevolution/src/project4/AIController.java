@@ -28,8 +28,6 @@ public class AIController {
 
     public AIController() {
 
-        IndividualCTRBrain.outputLayers = 3;
-
         reset();
 
     }
