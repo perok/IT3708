@@ -15,6 +15,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -51,6 +52,9 @@ public class FXMLTableViewController {
 
     @FXML
     TextField txtScenarioRunTimes;
+
+    @FXML
+    CheckBox cbStaticWorlds;
 
     private GraphicsContext gc;
 
@@ -219,6 +223,10 @@ public class FXMLTableViewController {
             }
         };
 }
+    @FXML
+    private void toggleStaticWorlds(ActionEvent event) {
+        AIController.globalIsStatic = cbStaticWorlds.isSelected();
+    }
 
 
     private void redraw(Items[][] world, Vector2 agentPosition) {

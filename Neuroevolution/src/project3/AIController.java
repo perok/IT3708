@@ -5,6 +5,7 @@ import algorithms.eann.IndividualBrain;
 import gameworlds.flatland.Flatland;
 import gameworlds.flatland.Movement;
 import gameworlds.flatland.sensor.Sensed;
+import javafx.fxml.FXML;
 
 
 import java.util.*;
@@ -12,11 +13,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * Created by PerØyvind on 13/04/2015.
+ * Created by Perï¿½yvind on 13/04/2015.
  */
 public class AIController {
 
     public static int globalScenariosToRun = 1;
+    public static boolean globalIsStatic = false;
+
 
     private List<IndividualBrain> population;
     private int populationSize = 100;
@@ -30,7 +33,6 @@ public class AIController {
 
     private Flatland currentScenario;
 
-
     public AIController() {
         neuroevolution = new Neuroevolution();
 
@@ -41,13 +43,17 @@ public class AIController {
         IntStream.range(0, populationSize)
                 .forEach(i -> population.add(new IndividualBrain()));
 
+        currentScenario = new Flatland(10, 1/3.0, 1/3.0);
+
         calculateFitnessOnPopulation();
     }
 
 
     private void calculateFitnessOnPopulation(){
-        // dynamic..
-        currentScenario = new Flatland(10, 1/3.0, 1/3.0);
+        if(globalIsStatic)
+            currentScenario = new Flatland(currentScenario);
+        else
+            currentScenario = new Flatland(10, 1/3.0, 1/3.0);
 
         population
                 .stream()
@@ -130,7 +136,6 @@ public class AIController {
 
     static Comparator<Map.Entry<Integer, Double>> byValue = (entry1, entry2) -> entry1.getValue().compareTo(
             entry2.getValue());
-
 
     public List<IndividualBrain> getPopulation() {
         return population;
