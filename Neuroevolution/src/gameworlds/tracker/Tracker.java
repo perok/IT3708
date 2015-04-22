@@ -1,5 +1,7 @@
 package gameworlds.tracker;
 
+import javafx.scene.paint.Color;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -11,6 +13,8 @@ public class Tracker {
 
     int currentTimestep = 0;
     int createTiles = 0;
+    int createdPositiveTiles = 0;
+
 
     Random random;
 
@@ -28,9 +32,11 @@ public class Tracker {
     int platformLength = 5;
 
     GameType gameType = GameType.NORMAL;
+    Color background = Color.WHITE;
 
     public Tracker(GameType gameType){
         this.gameType = gameType;
+
         random = new Random();
 
         platformLeftPos = random.nextInt(width - platformLength);
@@ -120,6 +126,8 @@ public class Tracker {
     private void createNewTile() {
         createTiles++;
         tileLength = random.nextInt(6) + 1;
+        if(tileLength < 5)
+            createdPositiveTiles++;
 
         if (!gameType.equals(GameType.NOWRAP)) {
             tileLeftPos = random.nextInt(width);
@@ -132,7 +140,7 @@ public class Tracker {
     }
 
     public double getStats(){
-        return (positive - negative) / (double)createTiles;
+        return Math.max(positive - Math.pow(negative, 2), 0) / (double)createdPositiveTiles;
     }
 
     public boolean isSmallTile() {
