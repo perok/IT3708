@@ -16,6 +16,8 @@ import java.util.stream.IntStream;
  */
 public class AIController {
 
+    public static int globalScenariosToRun = 1;
+
     private List<IndividualBrain> population;
     private int populationSize = 100;
     private int epoch = 0;
@@ -56,23 +58,26 @@ public class AIController {
                 // Fitness function that run Flatland
                 // ----------------------------------
                 .peek(individualBrain -> {
-                    // Setup Flatland
-                    Flatland flatland = new Flatland(currentScenario);
+                    double totalFitness = 0;
+                    for (int x = 0; x < globalScenariosToRun; x++) {
+                        // Setup Flatland
+                        Flatland flatland = new Flatland(currentScenario);
 
-                    // Run Flatland with 60 iteration
-                    for (int i = 0; i < 60; i++) {
-                        Movement move = helperIndividualFindMove(flatland, individualBrain);
+                        // Run Flatland with 60 iteration
+                        for (int i = 0; i < 60; i++) {
+                            Movement move = helperIndividualFindMove(flatland, individualBrain);
 
-                        // Perform the move
-                        flatland.move(move);
+                            // Perform the move
+                            flatland.move(move);
+                        }
+                        totalFitness += flatland.getStats();
                     }
 
                     // Record the fitness
-                    individualBrain.setFitness(flatland.getStats());
+                    individualBrain.setFitness(totalFitness / globalScenariosToRun);
                 })
                 .collect(Collectors.toList());
     }
-
 
 
     public static Movement helperIndividualFindMove(Flatland flatland, IndividualBrain individualBrain){
