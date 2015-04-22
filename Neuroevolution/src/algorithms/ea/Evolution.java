@@ -6,16 +6,13 @@ import algorithms.ea.individual.Individual;
 import algorithms.ea.individual.operators.GeneticOperator;
 import algorithms.ea.individual.operators.crossover.ICrossover;
 import algorithms.ea.individual.operators.mutation.IMutation;
-import algorithms.ea.statistics.GenerationStatistics;
-import algorithms.ea.mating.MatingTechniques;
+import algorithms.ea.mating.ParentSelection;
 import math.Statistics;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.BlockingQueue;
 import java.util.stream.Collectors;
 
 /**
@@ -71,8 +68,8 @@ public class Evolution<T extends Individual> {
     private IMutation mutatation = null;
     private ICrossover crossover = null;
 
-    private ParentSelections selectionsStrategy = ParentSelections.OVER_PRODUCTION;
-    private MatingTechniques matingStrategy = MatingTechniques.FITNESS_PROPORTIONATE;
+    private AdultSelection selectionsStrategy = AdultSelection.OVER_PRODUCTION;
+    private ParentSelection matingStrategy = ParentSelection.FITNESS_PROPORTIONATE;
 
 
     int POOL_SIZE = 40;
@@ -388,8 +385,8 @@ public class Evolution<T extends Individual> {
         System.out.println("Crossover: " + crossover);
         System.out.println("Parent pool size: " + PARENT_POOL_SIZE);
         System.out.println("Children pool size: " + CHIlDREN_POOL_SIZE);
-        System.out.println("Parent strategy: " + selectionsStrategy.name());
-        System.out.println("Mating strategy: " + matingStrategy.name());
+        System.out.println("Adult strategy: " + selectionsStrategy.name());
+        System.out.println("Parent strategy: " + matingStrategy.name());
         System.out.println("Eliteism       : " + eliteism);
 
 
@@ -401,13 +398,13 @@ public class Evolution<T extends Individual> {
     // Getters and setters
     // -------------------------------------
 
-    public Evolution<T> setAdultSelectionsStrategy(ParentSelections selectionsStrategy) {
+    public Evolution<T> setAdultSelectionsStrategy(AdultSelection selectionsStrategy) {
         this.selectionsStrategy = selectionsStrategy;
 
         return this;
     }
 
-    public Evolution<T> setMatingStrategy(MatingTechniques matingStrategy) {
+    public Evolution<T> setMatingStrategy(ParentSelection matingStrategy) {
         this.matingStrategy = matingStrategy;
         return this;
     }

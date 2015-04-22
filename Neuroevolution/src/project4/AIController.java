@@ -1,10 +1,10 @@
 package project4;
 
 import algorithms.ea.Evolution;
-import algorithms.ea.adultselection.ParentSelections;
+import algorithms.ea.adultselection.AdultSelection;
 import algorithms.ea.individual.operators.crossover.OneCrossover;
 import algorithms.ea.individual.operators.mutation.MaybeMutator;
-import algorithms.ea.mating.MatingTechniques;
+import algorithms.ea.mating.ParentSelection;
 import algorithms.ectrnn.IndividualCTRBrain;
 import gameworlds.tracker.Tracker;
 
@@ -43,8 +43,8 @@ public class AIController {
         tracker = new Tracker(gameType);
         evolution = new Evolution<>(IndividualCTRBrain.class);
         evolution = evolution
-                .setMatingStrategy(MatingTechniques.SIGMA_SCALING)
-                .setAdultSelectionsStrategy(ParentSelections.OVER_PRODUCTION)
+                .setMatingStrategy(ParentSelection.SIGMA_SCALING)
+                .setAdultSelectionsStrategy(AdultSelection.OVER_PRODUCTION)
                 .setMutation(new MaybeMutator(0.1))
                 .setCrossover(new OneCrossover())
                 .setCHIlDREN_POOL_SIZE(200)

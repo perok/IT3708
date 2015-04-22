@@ -32,7 +32,6 @@ public class Tracker {
     int platformLength = 5;
 
     GameType gameType = GameType.NORMAL;
-    Color background = Color.WHITE;
 
     int platformState;
 
