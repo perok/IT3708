@@ -79,7 +79,7 @@ public class Tracker {
         currentTimestep++;
 
         platformLeftPos = (((platformLeftPos % width) + width) % width);
-
+        
         // Move platform
         switch (movement) {
             case LEFT:
@@ -92,6 +92,7 @@ public class Tracker {
                 break;
             case PULLDOWN:
                 tileHeightPos = 1;
+                positive++;
                 break;
         }
 
