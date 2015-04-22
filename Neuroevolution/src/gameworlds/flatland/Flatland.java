@@ -14,6 +14,7 @@ public class Flatland {
 
     private int foodEaten = 0;
     private int poisonEaten = 0;
+    public int foodCreated = 0;
 
     private int currentTotalSteps = 0;
 
@@ -52,6 +53,12 @@ public class Flatland {
 
         // Create world todo backup of world?
         world = createRandomWorld(random, n, f, p);
+        for (int i = 0; i < world.length; i++) {
+            for (int j = 0; j < world[i].length; j++) {
+                if(world[i][j].equals(Items.FOOD))
+                    foodCreated++;
+            }
+        }
 
         // Robot placement
         agentPosition = new Vector2();
@@ -72,6 +79,7 @@ public class Flatland {
         this();
         this.agentDirection = flatland.agentDirection;
         this.agentPosition = new Vector2(flatland.agentPosition);
+        this.foodCreated = flatland.foodCreated;
         agentPositionHistory.add(new Vector2(agentPosition));
 
         this.world = new Items[flatland.world.length][flatland.world[0].length];
@@ -223,7 +231,10 @@ public class Flatland {
 
 
     public double getStats(){
-        return (foodEaten - poisonEaten) / (double) currentTotalSteps;
+        return Math.max(foodEaten - Math.pow(poisonEaten, 2), 0) / (double) foodCreated
+                - ((currentTotalSteps - foodEaten)/(double)currentTotalSteps);
+
+        //return (foodEaten - poisonEaten) / (double) currentTotalSteps;
     }
 
 

@@ -20,6 +20,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
+import java.text.DecimalFormat;
+
 /**
  * Created by Per�yvind on 18/04/2015.
  */
@@ -70,6 +72,7 @@ public class FXMLTableViewController {
     private LongProperty minSimulationUpdateInterval = new SimpleLongProperty(100000000);
 
 
+    DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
     /**
      * Run by JavaFX
@@ -100,11 +103,11 @@ public class FXMLTableViewController {
         });
 
         cBestFitness.addListener((observable, oldValue, newValue) -> {
-            txtCurrentBestFitness.setText(newValue.toString());
+            txtCurrentBestFitness.setText(decimalFormat.format(newValue));
         });
 
         cTotalFitness.addListener((observable, oldValue, newValue) -> {
-            txtCurrentTotalFitness.setText(newValue.toString());
+            txtCurrentTotalFitness.setText(decimalFormat.format(newValue));
         });
 
         isRunning.addListener(((observable, oldValue, newValue) -> {

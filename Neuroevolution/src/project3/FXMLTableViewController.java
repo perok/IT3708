@@ -17,9 +17,12 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import math.linnalg.Vector2;
+
+import java.text.DecimalFormat;
 
 /**
  * Created by Per�yvind on 18/04/2015.
@@ -46,6 +49,9 @@ public class FXMLTableViewController {
     @FXML
     LineChart<Number, Number> lcAiStatistics;
 
+    @FXML
+    TextField txtScenarioRunTimes;
+
     private GraphicsContext gc;
 
     private ObservableList<IndividualBrain> data;
@@ -63,6 +69,8 @@ public class FXMLTableViewController {
     private AnimationTimer aiRunner;
 
     private AnimationTimer simulationRunner;
+
+    DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
 
     /**
@@ -91,11 +99,11 @@ public class FXMLTableViewController {
         });
 
         cBestFitness.addListener((observable, oldValue, newValue) -> {
-            txtCurrentBestFitness.setText(newValue.toString());
+            txtCurrentBestFitness.setText(decimalFormat.format(newValue));
         });
 
         cTotalFitness.addListener((observable, oldValue, newValue) -> {
-            txtCurrentTotalFitness.setText(newValue.toString());
+            txtCurrentTotalFitness.setText(decimalFormat.format(newValue));
         });
 
         isRunning.addListener(((observable, oldValue, newValue) -> {
@@ -105,6 +113,15 @@ public class FXMLTableViewController {
             else
                 aiRunner.stop();
         }));
+
+        txtScenarioRunTimes.textProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue.length() > 0) {
+                Integer value = new Integer(newValue);
+                if(value > 0)
+                    AIController.globalScenariosToRun = value;
+            }
+
+        });
 
         tableView.setItems(data);
         tableView.sort();
