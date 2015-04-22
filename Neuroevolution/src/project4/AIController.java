@@ -6,7 +6,6 @@ import algorithms.ea.individual.operators.crossover.OneCrossover;
 import algorithms.ea.individual.operators.mutation.MaybeMutator;
 import algorithms.ea.mating.MatingTechniques;
 import algorithms.ectrnn.IndividualCTRBrain;
-import algorithms.ectrnn.Neuroevolution;
 import gameworlds.tracker.Tracker;
 
 import java.util.*;

@@ -5,7 +5,6 @@ import algorithms.ea.adultselection.ParentSelections;
 import algorithms.ea.individual.operators.crossover.OneCrossover;
 import algorithms.ea.individual.operators.mutation.MaybeMutator;
 import algorithms.ea.mating.MatingTechniques;
-import algorithms.eann.Neuroevolution;
 import algorithms.eann.IndividualBrain;
 import gameworlds.flatland.Flatland;
 import gameworlds.flatland.Movement;
