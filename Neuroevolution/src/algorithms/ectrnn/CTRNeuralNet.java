@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 /**
- * Created by PerØyvind on 19/04/2015.
+ * Created by Perï¿½yvind on 19/04/2015.
  *
  * Continuous time recurrent neural net
  *
- * todo neuroner har state, må kunne resettes
+ * todo neuroner har state, mï¿½ kunne resettes
  */
 public class CTRNeuralNet {
     private int numInputs;
@@ -84,8 +84,9 @@ public class CTRNeuralNet {
             for (int j = 0; j < nl.neurons.size(); ++j) {
                 Neuron neuron = nl.getNeurons().get(j);
                 //for each weight
-                for (int k=0; k < neuron.numberOfEvolvableWeights; ++k) {
+                for (int k = 0; k < neuron.numberOfEvolvableWeights; ++k) {
                     // todo removed weights.add( will create bug?
+
                     neuron.setWeight(k, weights.get(cWeight++));
                 }
             }
@@ -107,6 +108,8 @@ public class CTRNeuralNet {
         if(inputs.size() != numInputs) {
             // todo should throw exception
             System.err.println("Error wrong number of inputs: " + inputs.size() + ". Needed: " + numInputs);
+            //throw new RuntimeException();
+
             return new LinkedList<>();
         }
 

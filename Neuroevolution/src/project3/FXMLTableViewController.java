@@ -22,7 +22,7 @@ import javafx.scene.text.Text;
 import math.linnalg.Vector2;
 
 /**
- * Created by PerØyvind on 18/04/2015.
+ * Created by Perï¿½yvind on 18/04/2015.
  */
 public class FXMLTableViewController {
     @FXML

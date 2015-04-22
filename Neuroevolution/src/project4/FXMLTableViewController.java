@@ -13,7 +13,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -122,6 +122,142 @@ public class FXMLTableViewController {
         tableView.setItems(data);
         tableView.sort();
 
+        makeAiRunner();
+
+        // ================================================
+        // Run simulation for one individual
+        // ================================================
+        tableView.setRowFactory(tv -> {
+                    TableRow<IndividualCTRBrain> row = new TableRow<>();
+                    row.setOnMouseClicked(event -> {
+                        if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                            IndividualCTRBrain rowData = row.getItem();
+
+                            if (simulationRunner != null)
+                                simulationRunner.stop();
+
+                            simulationRunner = makeSimulationRunner(rowData);
+
+                            simulationRunner.start();
+                        }
+                    });
+
+                    return row;
+                }
+        );
+    }
+
+    @FXML
+    private void reset() {
+        aiRunner.stop();
+        aiController.reset();
+
+        currentEpoch.set(0);
+        isRunning.set(false);
+
+        cBestFitness.set(0);
+        cTotalFitness.set(0);
+
+        if(simulationRunner != null)
+            simulationRunner.stop();
+
+        data.clear();
+        data.setAll(aiController.getPopulation());
+        tableView.setItems(data);
+        tableView.sort();
+
+        makeAiRunner();
+    }
+
+
+    @FXML
+    protected void startAi(ActionEvent event) {
+        isRunning.set(!isRunning.get());
+    }
+
+    private AnimationTimer makeSimulationRunner(final IndividualCTRBrain individual){
+
+        final LongProperty lastUpdate = new SimpleLongProperty();
+        return new AnimationTimer() {
+            Tracker scenario = new Tracker(aiController.getGameType());
+
+            @Override
+            public void handle(long now) {
+
+                int cStep = scenario.getCurrentTimestep();
+
+                if (now - lastUpdate.get() > minSimulationUpdateInterval.get()) {
+                    if (cStep < 600) {
+                        Tracker.Movement move = AIController.helperIndividualFindMove(scenario, individual);
+                        scenario.newStep(move);
+                        redraw(scenario);
+
+                    } else {
+                        this.stop();
+                    }
+
+                    lastUpdate.set(now);
+                }
+            }
+        };
+    }
+
+    @FXML
+    public void tglTriggerGameActon(ActionEvent event) {
+        Tracker.GameType gameType;
+
+        switch (((RadioButton) event.getSource()).getText()){
+            case "Normal":
+                gameType = Tracker.GameType.NORMAL;
+                break;
+            case "No-Wrap":
+                gameType = Tracker.GameType.NOWRAP;
+                break;
+            case "Pull down":
+                gameType = Tracker.GameType.PULLDOWN;
+                break;
+            default:
+                System.err.println("Wrong type on radio button list");
+                return;
+        }
+        aiController.setTrackerGameType(gameType);
+
+        reset();
+    }
+
+
+    private void redraw(Tracker tracker) {
+        gc.clearRect(0, 0, simulation.getWidth(), simulation.getHeight());
+
+        int xSize = (int)(simulation.getWidth() / tracker.getWidth());
+        int ySize = (int)(simulation.getHeight() / tracker.getHeight());
+
+        int width =  tracker.getWidth();
+
+        if(tracker.getTileLength() > 4) {
+            gc.setFill(Color.RED);
+        } else {
+            gc.setFill(Color.GREEN);
+        }
+
+        drawWrappedRectangle(tracker.getTileLeftPos(), tracker.getTileLength(), tracker.getHeight() - tracker.getTileHeightPos(), width, xSize, ySize);
+
+        gc.setFill(Color.YELLOW);
+
+        drawWrappedRectangle(tracker.getPlatformLeftPos(), tracker.getPlatformLength(), tracker.getHeight(), width, xSize, ySize);
+    }
+
+    public void drawWrappedRectangle(int leftPos, int tileLength, int yPos, int width, int xSize, int ySize) {
+        for(int i = 0; i < tileLength; i++) {
+
+            int i_tmp = leftPos + i;
+
+            i_tmp = (((i_tmp % width) + width) % width);
+            gc.fillRect(i_tmp * xSize, yPos * ySize, xSize, ySize);
+        }
+    }
+
+    public void makeAiRunner() {
         // ================================================
         // Graph data
         // ================================================
@@ -159,78 +295,5 @@ public class FXMLTableViewController {
                 cBestFitness.set(gs.bestIndividual.getFitness());
             }
         };
-
-        // ================================================
-        // Run simulation for one individual
-        // ================================================
-        tableView.setRowFactory(tv -> {
-                    TableRow<IndividualCTRBrain> row = new TableRow<>();
-                    row.setOnMouseClicked(event -> {
-                        if (event.getClickCount() == 2 && (!row.isEmpty())) {
-                            IndividualCTRBrain rowData = row.getItem();
-
-                            if (simulationRunner != null)
-                                simulationRunner.stop();
-
-                            simulationRunner = makeSimulationRunner(rowData);
-
-                            simulationRunner.start();
-                        }
-                    });
-
-                    return row;
-                }
-        );
-    }
-
-
-    @FXML
-    protected void startAi(ActionEvent event) {
-        isRunning.set(!isRunning.get());
-    }
-
-    private AnimationTimer makeSimulationRunner(final IndividualCTRBrain individual){
-
-        final LongProperty lastUpdate = new SimpleLongProperty();
-        return new AnimationTimer() {
-            Tracker scenario = new Tracker();
-
-            @Override
-            public void handle(long now) {
-                int cStep = scenario.getCurrentTimestep();
-
-                if (now - lastUpdate.get() > minSimulationUpdateInterval.get()) {
-                    if (cStep < 600) {
-                        Tracker.Movement move = AIController.helperIndividualFindMove(scenario, individual);
-                        scenario.newStep(move);
-                        redraw(scenario);
-
-                    } else {
-                        this.stop();
-                    }
-
-                    lastUpdate.set(now);
-                }
-            }
-        };
-}
-
-
-    private void redraw(Tracker tracker) {
-        gc.clearRect(0, 0, simulation.getWidth(), simulation.getHeight());
-
-        int xSize = (int)(simulation.getWidth() / tracker.getWidth());
-        int ySize = (int)(simulation.getHeight() / tracker.getHeight());
-
-        if(tracker.getTileLength() > 4) {
-            gc.setFill(Color.RED);
-        } else {
-            gc.setFill(Color.GREEN);
-        }
-
-        gc.fillRect(tracker.getTileLeftPos() * xSize, (tracker.getHeight() - tracker.getTileHeightPos()) * ySize, tracker.getTileLength() * xSize, ySize);
-
-        gc.setFill(Color.YELLOW);
-        gc.fillRect(tracker.getPlatformLeftPos() * xSize, tracker.getHeight() * ySize, tracker.getPlatformLength() * xSize, ySize);
     }
 }

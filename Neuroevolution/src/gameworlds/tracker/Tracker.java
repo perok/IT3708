@@ -1,5 +1,7 @@
 package gameworlds.tracker;
 
+import javafx.scene.paint.Color;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -11,6 +13,8 @@ public class Tracker {
 
     int currentTimestep = 0;
     int createTiles = 0;
+    int createdPositiveTiles = 0;
+
 
     Random random;
 
@@ -27,7 +31,12 @@ public class Tracker {
     int platformLeftPos;
     int platformLength = 5;
 
-    public Tracker(){
+    GameType gameType = GameType.NORMAL;
+    Color background = Color.WHITE;
+
+    public Tracker(GameType gameType){
+        this.gameType = gameType;
+
         random = new Random();
 
         platformLeftPos = random.nextInt(width - platformLength);
@@ -36,12 +45,31 @@ public class Tracker {
 
     public List<Double> getSensory(){
         List<Double> output = new LinkedList<>();
-        for (int i = platformLeftPos; i < platformLeftPos + platformLength; i++) {
-            if(i >= tileLeftPos && i <= tileLeftPos + tileLength)
+
+        if(gameType.equals(GameType.NOWRAP)) {
+            if(platformLeftPos == 0)
                 output.add(1.0);
             else
                 output.add(0.0);
         }
+
+        for (int i = platformLeftPos; i < platformLeftPos + platformLength; i++) {
+
+            int tileUpperLimit = tileLeftPos + tileLength;
+
+            if(i >= tileLeftPos && i <= tileUpperLimit)
+                output.add(1.0);
+            else
+                output.add(0.0);
+        }
+
+        if(gameType.equals(GameType.NOWRAP)) {
+            if(platformLeftPos + platformLength == width)
+                output.add(0.0);
+            else
+                output.add(1.0);
+        }
+
         return output;
     }
 
@@ -51,13 +79,16 @@ public class Tracker {
         // Move platform
         switch (movement) {
             case LEFT:
-                if (platformLeftPos > 0)
+                if((platformLeftPos > 0) || (!gameType.equals(GameType.NOWRAP)))
                     platformLeftPos--;
                 break;
             case RIGHT:
-                if (platformLeftPos + platformLength < width)
+                if((platformLeftPos + platformLength < width) || (!gameType.equals(GameType.NOWRAP)))
                     platformLeftPos++;
+                break;
         }
+
+        platformLeftPos = (((platformLeftPos % width) + width) % width);
 
         // Move falling tile. If crash then register result and start again.
         tileHeightPos--;
@@ -92,15 +123,24 @@ public class Tracker {
 
     }
 
-    private void createNewTile(){
+    private void createNewTile() {
         createTiles++;
         tileLength = random.nextInt(6) + 1;
-        tileLeftPos = random.nextInt(width - tileLength);
+        if(tileLength < 5)
+            createdPositiveTiles++;
+
+        if (!gameType.equals(GameType.NOWRAP)) {
+            tileLeftPos = random.nextInt(width);
+            tileLeftPos = (((tileLeftPos % width) + width) % width);
+        } else {
+            tileLeftPos = random.nextInt(width - tileLength);
+        }
+
         tileHeightPos = height;
     }
 
     public double getStats(){
-        return (positive - negative) / (double)createTiles;
+        return Math.max(positive - Math.pow(negative, 2), 0) / (double)createdPositiveTiles;
     }
 
     public boolean isSmallTile() {
@@ -108,7 +148,7 @@ public class Tracker {
     }
 
     public enum Movement {
-        LEFT, RIGHT
+        LEFT, RIGHT, PULLDOWN
     }
 
     public int getTileLeftPos() {
@@ -141,5 +181,9 @@ public class Tracker {
 
     public int getCurrentTimestep() {
         return currentTimestep;
+    }
+
+    public enum GameType {
+        NORMAL, NOWRAP, PULLDOWN
     }
 }

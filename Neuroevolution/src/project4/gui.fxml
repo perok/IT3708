@@ -70,6 +70,7 @@
     <VBox spacing="10" alignment="top_right" GridPane.columnIndex="1"
     GridPane.rowIndex="0">
         <Button text="Toggle Darwinism" onAction="#startAi"/>
+        <Button text="Reset" onAction="#reset"/>
 
         <HBox spacing="10" alignment="top_right">
             <Text text="Is running:"/>
@@ -83,6 +84,19 @@
         </HBox>
 
         <TextField fx:id="txtfSimulationInterval"/>
+
+        <Text text="Game type:" />
+
+        <VBox>
+            <fx:define>
+                <ToggleGroup fx:id="myToggleGroup"/>
+            </fx:define>
+            <children>
+                <RadioButton text="Normal" toggleGroup="$myToggleGroup" selected="true" onAction="#tglTriggerGameActon"/>
+                <RadioButton text="No-Wrap" toggleGroup="$myToggleGroup" onAction="#tglTriggerGameActon"/>
+                <RadioButton text="Pull down" toggleGroup="$myToggleGroup" onAction="#tglTriggerGameActon"/>
+            </children>
+        </VBox>
     </VBox>
 
 

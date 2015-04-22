@@ -18,11 +18,27 @@ public class AIController {
     private int epoch = 0;
     private Neuroevolution neuroevolution;
 
+    Tracker.GameType gameType = Tracker.GameType.NORMAL;
+
+    private Tracker tracker;
+
     // 1. Make a population
     // 2. Run population on game world
     // 3. Collect fitness underway
 
     public AIController() {
+
+        IndividualCTRBrain.outputLayers = 3;
+
+        reset();
+
+    }
+
+    public void reset() {
+        updateVariables();
+        epoch = 0;
+
+        tracker = new Tracker(gameType);
         neuroevolution = new Neuroevolution();
 
         // ----------------------------------
@@ -34,7 +50,6 @@ public class AIController {
 
         calculateFitnessOnPopulation();
     }
-
 
     private void calculateFitnessOnPopulation(){
 
@@ -48,7 +63,7 @@ public class AIController {
                 // ----------------------------------
                 .peek(individualBrain -> {
                     // Setup a new Tracker
-                    Tracker tracker = new Tracker();
+                    tracker = new Tracker(gameType);
 
                     // Run Tracker with 600 iteration
                     for (int i = 0; i < 600; i++) {
@@ -74,8 +89,10 @@ public class AIController {
         // Find out what to do with output
         Map<Integer, Double> list = new HashMap<>();
         //System.out.println("Val1: " + output.get(0) + " Val2: " + output.get(1));
-        list.put(0, output.get(0));
-        list.put(1, output.get(1));
+
+        for(int i = 0; i < IndividualCTRBrain.outputLayers; i++) {
+            list.put(i, output.get(i));
+        }
 
         Optional<Map.Entry<Integer, Double>> val = list.entrySet().stream()
                 .sorted(byValue.reversed())
@@ -86,9 +103,29 @@ public class AIController {
                 return Tracker.Movement.LEFT;
             case 1:
                 return Tracker.Movement.RIGHT;
+            case 2:
+                return Tracker.Movement.PULLDOWN;
             default:
                 System.err.println("WTF");
                 return Tracker.Movement.LEFT;
+        }
+    }
+
+
+    private void updateVariables(){
+        switch (gameType) {
+            case NORMAL:
+                IndividualCTRBrain.inputLayers = 5;
+                IndividualCTRBrain.outputLayers = 2;
+                break;
+            case NOWRAP:
+                IndividualCTRBrain.inputLayers = 7;
+                IndividualCTRBrain.outputLayers = 2;
+                break;
+            case PULLDOWN:
+                IndividualCTRBrain.inputLayers = 5;
+                IndividualCTRBrain.outputLayers = 3;
+                break;
         }
     }
 
@@ -116,5 +153,13 @@ public class AIController {
 
     public int getEpoch() {
         return epoch;
+    }
+
+    public void setTrackerGameType (Tracker.GameType gameType){
+        this.gameType = gameType;
+    }
+
+    public Tracker.GameType getGameType() {
+        return gameType;
     }
 }
