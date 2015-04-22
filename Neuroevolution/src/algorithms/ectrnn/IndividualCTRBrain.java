@@ -18,25 +18,14 @@ import java.util.stream.IntStream;
 public class IndividualCTRBrain extends Individual<Byte>{
 
     private CTRNeuralNet brain;
-    private boolean wrapAround = false;
+
+    public static int inputLayers = 5;
+    public static int outputLayers = 2;
+
+
+    int noWeightsUsedInBrain;
 
     public IndividualCTRBrain() {
-        init();
-    }
-
-    public IndividualCTRBrain(boolean wrapAround) {
-        this.wrapAround = wrapAround;
-        init();
-    }
-
-    public void buildPhenotypes() {
-        this.phenotypes = IntStream.range(0, this.genotypes.getActualData().length)
-                .mapToObj(i -> this.genotypes.getActualData()[i])
-                .collect(Collectors.toList());
-        System.out.println("Phenotypes built: " + this.phenotypes.size() + " " + this.genotypes.getActualData().length);
-    }
-
-    private void init() {
         // ----------------------------------
         // Artificial Neural Network
         // Inputs: 5 or 7
@@ -44,11 +33,13 @@ public class IndividualCTRBrain extends Individual<Byte>{
         // Hidden Layers: 1
         // Neuron in each hidden layer: 2
         // ----------------------------------
-        brain = new CTRNeuralNet(wrapAround ? 5 : 7, 2, 1, 2);
+        brain = new CTRNeuralNet(inputLayers, 2, 1, outputLayers);
 
         // Get brain data and make genotype of it
         // todo getWeights must return correct Byte
         List<Byte> weights = brain.getWeights(); // getfrom number of weights
+
+        noWeightsUsedInBrain = weights.size();
 
         byte[] genotypeData = new byte[weights.size()]; // get all the weights
         IntStream.range(0, weights.size())
@@ -59,16 +50,22 @@ public class IndividualCTRBrain extends Individual<Byte>{
         System.out.println("Brain done: " + this.genotypes.getActualData().length + " " + weights.size());
     }
 
+
+    public void buildPhenotypes() {
+        this.phenotypes = IntStream.range(0, this.genotypes.getActualData().length)
+                .mapToObj(i -> this.genotypes.getActualData()[i])
+                .collect(Collectors.toList());
+        if(this.phenotypes.size() != noWeightsUsedInBrain) {
+            System.err.println("Fatal phenotype error: Wrong amount. " + this.phenotypes.size() + " " + noWeightsUsedInBrain);
+        }
+    }
+
+
     /**
      * Inserts the phenotypes to the brain as weights
      */
     public void rewireBrain(){
         brain.setWeights(this.getPhenotypes());
-    }
-
-    public void setWrapAround(boolean wrapAround) {
-        this.wrapAround = wrapAround;
-        init();
     }
 
     public List<Double> think(List<Double> input){

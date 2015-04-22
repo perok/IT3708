@@ -85,7 +85,7 @@
 
         <TextField fx:id="txtfSimulationInterval"/>
 
-        <CheckBox text="Wraparound" onAction="#toggleWrapAround"/>
+        <CheckBox text="No-wrap" onAction="#toggleWrapAround" selected="false"/>
     </VBox>
 
 

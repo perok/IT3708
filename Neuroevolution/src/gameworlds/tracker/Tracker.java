@@ -29,7 +29,8 @@ public class Tracker {
 
     boolean wrapAround = false;
 
-    public Tracker(){
+    public Tracker(boolean noWrap){
+        wrapAround = !noWrap;
         random = new Random();
 
         platformLeftPos = random.nextInt(width - platformLength);
@@ -175,8 +176,4 @@ public class Tracker {
     public int getCurrentTimestep() {
         return currentTimestep;
     }
-
-    public boolean isWrapAround() { return wrapAround; }
-
-    public void setWrapAround(boolean wrapAround) { this.wrapAround = wrapAround; }
 }

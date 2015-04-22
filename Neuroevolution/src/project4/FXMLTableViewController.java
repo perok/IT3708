@@ -148,8 +148,10 @@ public class FXMLTableViewController {
 
     @FXML
     private void toggleWrapAround(ActionEvent event) {
-        aiController.toggleWrapAround();
+        aiController.setNoWrap(!aiController.getNoWrap());
 
+        System.out.println("noWrap: " + aiController.getNoWrap());
+        System.out.println("Inputs: " + IndividualCTRBrain.inputLayers);
         reset();
     }
 
@@ -162,12 +164,10 @@ public class FXMLTableViewController {
 
         final LongProperty lastUpdate = new SimpleLongProperty();
         return new AnimationTimer() {
-            Tracker scenario = new Tracker();
+            Tracker scenario = new Tracker(aiController.getNoWrap());
 
             @Override
             public void handle(long now) {
-
-                scenario.setWrapAround(aiController.hasWrapAround());
 
                 int cStep = scenario.getCurrentTimestep();
 
@@ -202,11 +202,9 @@ public class FXMLTableViewController {
             simulationRunner.stop();
 
         data.clear();
-
         data.setAll(aiController.getPopulation());
         tableView.setItems(data);
         tableView.sort();
-
 
         makeAiRunner();
     }

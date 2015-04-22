@@ -18,7 +18,7 @@ public class AIController {
     private int epoch = 0;
     private Neuroevolution neuroevolution;
 
-    private boolean hasWrapAround = false;
+    private boolean noWrap = false;
 
     private Tracker tracker;
 
@@ -32,6 +32,8 @@ public class AIController {
 
     public void reset() {
         epoch = 0;
+
+        tracker = new Tracker(noWrap);
         neuroevolution = new Neuroevolution();
 
         // ----------------------------------
@@ -39,8 +41,7 @@ public class AIController {
         // ----------------------------------
         population = new LinkedList<>();
         IntStream.range(0, populationSize)
-                .forEach(i -> population.add(new IndividualCTRBrain(hasWrapAround)));
-        System.out.println("YOLO: " + hasWrapAround);
+                .forEach(i -> population.add(new IndividualCTRBrain()));
 
         calculateFitnessOnPopulation();
     }
@@ -57,8 +58,7 @@ public class AIController {
                 // ----------------------------------
                 .peek(individualBrain -> {
                     // Setup a new Tracker
-                    tracker = new Tracker();
-                    tracker.setWrapAround(hasWrapAround);
+                    tracker = new Tracker(noWrap);
 
                     // Run Tracker with 600 iteration
                     for (int i = 0; i < 600; i++) {
@@ -128,10 +128,18 @@ public class AIController {
         return epoch;
     }
 
-    public void toggleWrapAround() {
-        hasWrapAround = !hasWrapAround;
-        tracker.setWrapAround(hasWrapAround);
+    public void setNoWrap(boolean noWrap) {
+        this.noWrap = noWrap;
+
+        if(this.noWrap) {
+            IndividualCTRBrain.inputLayers = 7;
+        } else {
+            IndividualCTRBrain.inputLayers = 5;
+        }
     }
 
-    public boolean hasWrapAround() { return hasWrapAround; }
+    public boolean getNoWrap() {
+        return noWrap;
+    }
+
 }
