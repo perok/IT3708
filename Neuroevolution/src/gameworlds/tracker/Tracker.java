@@ -38,21 +38,33 @@ public class Tracker {
 
     public List<Double> getSensory(){
         List<Double> output = new LinkedList<>();
-        for (int i = platformLeftPos; i < platformLeftPos + platformLength; i++) {
 
-            int tileUpperLimit = tileLeftPos + tileLength;
-            int i_tmp = i;
-
-            if(wrapAround) {
-                i_tmp = (((i % width) + width) % width);
-                tileUpperLimit = (((tileUpperLimit % width) + width) % width);
-            }
-
-            if(i_tmp >= tileLeftPos && i_tmp <= tileUpperLimit)
+        if(!wrapAround) {
+            if(platformLeftPos == 0)
                 output.add(1.0);
             else
                 output.add(0.0);
         }
+
+        for (int i = platformLeftPos; i < platformLeftPos + platformLength; i++) {
+
+            int tileUpperLimit = tileLeftPos + tileLength;
+
+
+
+            if(i >= tileLeftPos && i <= tileUpperLimit)
+                output.add(1.0);
+            else
+                output.add(0.0);
+        }
+
+        if(!wrapAround) {
+            if(platformLeftPos + platformLength == width)
+                output.add(0.0);
+            else
+                output.add(1.0);
+        }
+
         return output;
     }
 
@@ -62,16 +74,14 @@ public class Tracker {
         // Move platform
         switch (movement) {
             case LEFT:
-                if(wrapAround || (platformLeftPos > 0))
-                    platformLeftPos--;
+                platformLeftPos--;
                 break;
             case RIGHT:
-                if(wrapAround || (platformLeftPos + platformLength < width))
-                    platformLeftPos++;
+                platformLeftPos++;
                 break;
         }
-        if(wrapAround)
-            platformLeftPos = (((platformLeftPos % width) + width) % width);
+
+        platformLeftPos = (((platformLeftPos % width) + width) % width);
 
         // Move falling tile. If crash then register result and start again.
         tileHeightPos--;

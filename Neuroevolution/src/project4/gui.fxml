@@ -70,6 +70,7 @@
     <VBox spacing="10" alignment="top_right" GridPane.columnIndex="1"
     GridPane.rowIndex="0">
         <Button text="Toggle Darwinism" onAction="#startAi"/>
+        <Button text="Reset" onAction="#reset"/>
 
         <HBox spacing="10" alignment="top_right">
             <Text text="Is running:"/>
