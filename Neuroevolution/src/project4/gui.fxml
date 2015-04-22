@@ -85,7 +85,18 @@
 
         <TextField fx:id="txtfSimulationInterval"/>
 
-        <CheckBox text="No-wrap" onAction="#toggleWrapAround" selected="false"/>
+        <Text text="Game type:" />
+
+        <VBox>
+            <fx:define>
+                <ToggleGroup fx:id="myToggleGroup"/>
+            </fx:define>
+            <children>
+                <RadioButton text="Normal" toggleGroup="$myToggleGroup" selected="true" onAction="#tglTriggerGameActon"/>
+                <RadioButton text="No-Wrap" toggleGroup="$myToggleGroup" onAction="#tglTriggerGameActon"/>
+                <RadioButton text="Pull down" toggleGroup="$myToggleGroup" onAction="#tglTriggerGameActon"/>
+            </children>
+        </VBox>
     </VBox>
 
 

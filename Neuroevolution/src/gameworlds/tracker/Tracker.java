@@ -27,10 +27,10 @@ public class Tracker {
     int platformLeftPos;
     int platformLength = 5;
 
-    boolean noWrap = false;
+    GameType gameType = GameType.NORMAL;
 
-    public Tracker(boolean noWrap){
-        this.noWrap = noWrap;
+    public Tracker(GameType gameType){
+        this.gameType = gameType;
         random = new Random();
 
         platformLeftPos = random.nextInt(width - platformLength);
@@ -40,7 +40,7 @@ public class Tracker {
     public List<Double> getSensory(){
         List<Double> output = new LinkedList<>();
 
-        if(noWrap) {
+        if(gameType.equals(GameType.NOWRAP)) {
             if(platformLeftPos == 0)
                 output.add(1.0);
             else
@@ -51,15 +51,13 @@ public class Tracker {
 
             int tileUpperLimit = tileLeftPos + tileLength;
 
-
-
             if(i >= tileLeftPos && i <= tileUpperLimit)
                 output.add(1.0);
             else
                 output.add(0.0);
         }
 
-        if(noWrap) {
+        if(gameType.equals(GameType.NOWRAP)) {
             if(platformLeftPos + platformLength == width)
                 output.add(0.0);
             else
@@ -75,11 +73,11 @@ public class Tracker {
         // Move platform
         switch (movement) {
             case LEFT:
-                if((platformLeftPos > 0) || (!noWrap))
+                if((platformLeftPos > 0) || (!gameType.equals(GameType.NOWRAP)))
                     platformLeftPos--;
                 break;
             case RIGHT:
-                if((platformLeftPos + platformLength < width) || (!noWrap))
+                if((platformLeftPos + platformLength < width) || (!gameType.equals(GameType.NOWRAP)))
                     platformLeftPos++;
                 break;
         }
@@ -123,7 +121,7 @@ public class Tracker {
         createTiles++;
         tileLength = random.nextInt(6) + 1;
 
-        if (!noWrap) {
+        if (!gameType.equals(GameType.NOWRAP)) {
             tileLeftPos = random.nextInt(width);
             tileLeftPos = (((tileLeftPos % width) + width) % width);
         } else {
@@ -142,7 +140,7 @@ public class Tracker {
     }
 
     public enum Movement {
-        LEFT, RIGHT
+        LEFT, RIGHT, PULLDOWN
     }
 
     public int getTileLeftPos() {
@@ -175,5 +173,9 @@ public class Tracker {
 
     public int getCurrentTimestep() {
         return currentTimestep;
+    }
+
+    public enum GameType {
+        NORMAL, NOWRAP, PULLDOWN
     }
 }

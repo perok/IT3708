@@ -46,8 +46,6 @@ public class IndividualCTRBrain extends Individual<Byte>{
                 .forEach(i -> genotypeData[i] = weights.get(i));
 
         this.genotypes = new Genotype(genotypeData, weights.size());
-
-        System.out.println("Brain done: " + this.genotypes.getActualData().length + " " + weights.size());
     }
 
 

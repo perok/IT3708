@@ -69,7 +69,6 @@ public class CTRNeuralNet {
                 }
             }
         }
-        System.out.println("getWeight, size: " + weights.size());
 
         return weights;
     }
@@ -77,7 +76,6 @@ public class CTRNeuralNet {
     public void setWeights(List<Byte> weights) {
 
         int cWeight = 0;
-        System.out.println("setWeights: size " + weights.size());
 
         //each layer
         for (int i=0; i < numHiddenLayers + 1; ++i) {

@@ -13,6 +13,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -147,13 +148,27 @@ public class FXMLTableViewController {
     }
 
     @FXML
-    private void toggleWrapAround(ActionEvent event) {
-        aiController.setNoWrap(!aiController.getNoWrap());
+    private void reset() {
+        aiRunner.stop();
+        aiController.reset();
 
-        System.out.println("noWrap: " + aiController.getNoWrap());
-        System.out.println("Inputs: " + IndividualCTRBrain.inputLayers);
-        reset();
+        currentEpoch.set(0);
+        isRunning.set(false);
+
+        cBestFitness.set(0);
+        cTotalFitness.set(0);
+
+        if(simulationRunner != null)
+            simulationRunner.stop();
+
+        data.clear();
+        data.setAll(aiController.getPopulation());
+        tableView.setItems(data);
+        tableView.sort();
+
+        makeAiRunner();
     }
+
 
     @FXML
     protected void startAi(ActionEvent event) {
@@ -164,7 +179,7 @@ public class FXMLTableViewController {
 
         final LongProperty lastUpdate = new SimpleLongProperty();
         return new AnimationTimer() {
-            Tracker scenario = new Tracker(aiController.getNoWrap());
+            Tracker scenario = new Tracker(aiController.getGameType());
 
             @Override
             public void handle(long now) {
@@ -188,26 +203,28 @@ public class FXMLTableViewController {
     }
 
     @FXML
-    private void reset() {
-        aiRunner.stop();
-        aiController.reset();
+    public void tglTriggerGameActon(ActionEvent event) {
+        Tracker.GameType gameType;
 
-        currentEpoch.set(0);
-        isRunning.set(false);
+        switch (((RadioButton) event.getSource()).getText()){
+            case "Normal":
+                gameType = Tracker.GameType.NORMAL;
+                break;
+            case "No-Wrap":
+                gameType = Tracker.GameType.NOWRAP;
+                break;
+            case "Pull down":
+                gameType = Tracker.GameType.PULLDOWN;
+                break;
+            default:
+                System.err.println("Wrong type on radio button list");
+                return;
+        }
+        aiController.setTrackerGameType(gameType);
 
-        cBestFitness.set(0);
-        cTotalFitness.set(0);
-
-        if(simulationRunner != null)
-            simulationRunner.stop();
-
-        data.clear();
-        data.setAll(aiController.getPopulation());
-        tableView.setItems(data);
-        tableView.sort();
-
-        makeAiRunner();
+        reset();
     }
+
 
     private void redraw(Tracker tracker) {
         gc.clearRect(0, 0, simulation.getWidth(), simulation.getHeight());

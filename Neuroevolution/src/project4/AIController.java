@@ -18,7 +18,7 @@ public class AIController {
     private int epoch = 0;
     private Neuroevolution neuroevolution;
 
-    private boolean noWrap = false;
+    Tracker.GameType gameType = Tracker.GameType.NORMAL;
 
     private Tracker tracker;
 
@@ -31,9 +31,10 @@ public class AIController {
     }
 
     public void reset() {
+        updateVariables();
         epoch = 0;
 
-        tracker = new Tracker(noWrap);
+        tracker = new Tracker(gameType);
         neuroevolution = new Neuroevolution();
 
         // ----------------------------------
@@ -58,7 +59,7 @@ public class AIController {
                 // ----------------------------------
                 .peek(individualBrain -> {
                     // Setup a new Tracker
-                    tracker = new Tracker(noWrap);
+                    tracker = new Tracker(gameType);
 
                     // Run Tracker with 600 iteration
                     for (int i = 0; i < 600; i++) {
@@ -102,6 +103,24 @@ public class AIController {
         }
     }
 
+
+    private void updateVariables(){
+        switch (gameType) {
+            case NORMAL:
+                IndividualCTRBrain.inputLayers = 5;
+                IndividualCTRBrain.outputLayers = 2;
+                break;
+            case NOWRAP:
+                IndividualCTRBrain.inputLayers = 7;
+                IndividualCTRBrain.outputLayers = 2;
+                break;
+            case PULLDOWN:
+                IndividualCTRBrain.inputLayers = 5;
+                IndividualCTRBrain.outputLayers = 3;
+                break;
+        }
+    }
+
     /**
      * Runs one epoch and returns the best individual
      */
@@ -128,18 +147,11 @@ public class AIController {
         return epoch;
     }
 
-    public void setNoWrap(boolean noWrap) {
-        this.noWrap = noWrap;
-
-        if(this.noWrap) {
-            IndividualCTRBrain.inputLayers = 7;
-        } else {
-            IndividualCTRBrain.inputLayers = 5;
-        }
+    public void setTrackerGameType (Tracker.GameType gameType){
+        this.gameType = gameType;
     }
 
-    public boolean getNoWrap() {
-        return noWrap;
+    public Tracker.GameType getGameType() {
+        return gameType;
     }
-
 }
