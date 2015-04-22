@@ -27,10 +27,10 @@ public class Tracker {
     int platformLeftPos;
     int platformLength = 5;
 
-    boolean wrapAround = false;
+    boolean noWrap = false;
 
     public Tracker(boolean noWrap){
-        wrapAround = !noWrap;
+        this.noWrap = noWrap;
         random = new Random();
 
         platformLeftPos = random.nextInt(width - platformLength);
@@ -40,7 +40,7 @@ public class Tracker {
     public List<Double> getSensory(){
         List<Double> output = new LinkedList<>();
 
-        if(!wrapAround) {
+        if(noWrap) {
             if(platformLeftPos == 0)
                 output.add(1.0);
             else
@@ -59,7 +59,7 @@ public class Tracker {
                 output.add(0.0);
         }
 
-        if(!wrapAround) {
+        if(noWrap) {
             if(platformLeftPos + platformLength == width)
                 output.add(0.0);
             else
@@ -75,11 +75,11 @@ public class Tracker {
         // Move platform
         switch (movement) {
             case LEFT:
-                if(wrapAround || (platformLeftPos > 0))
+                if((platformLeftPos > 0) || (!noWrap))
                     platformLeftPos--;
                 break;
             case RIGHT:
-                if(wrapAround || (platformLeftPos + platformLength < width))
+                if((platformLeftPos + platformLength < width) || (!noWrap))
                     platformLeftPos++;
                 break;
         }
@@ -123,7 +123,7 @@ public class Tracker {
         createTiles++;
         tileLength = random.nextInt(6) + 1;
 
-        if (wrapAround) {
+        if (!noWrap) {
             tileLeftPos = random.nextInt(width);
             tileLeftPos = (((tileLeftPos % width) + width) % width);
         } else {
