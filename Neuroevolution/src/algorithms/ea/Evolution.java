@@ -64,7 +64,6 @@ public class Evolution<T extends Individual> {
     // -------------------------------------
     private Random random;
     private Class<T> reference;
-    private boolean ready = false;
 
     // -------------------------------------
     // Algorithm tweaks
@@ -80,7 +79,6 @@ public class Evolution<T extends Individual> {
 
     int PARENT_POOL_SIZE = 35;
     int CHIlDREN_POOL_SIZE = 40;
-    int NUMBER_OF_ITERATIONS = 100;
 
     int eliteism = 0;
 
@@ -345,11 +343,14 @@ public class Evolution<T extends Individual> {
         List<T> pool = new ArrayList<>(population);
 
         // 1. Parent selection - Who get to mate of the survivors
+        // mating does parent selection then mates the results.
         List<T> newChildren = performMating(population).stream()
                 .peek(individual -> individual.mutate(mutatation))
                 .collect(Collectors.toList());
 
         pool.addAll(newChildren);
+
+        // todo eliteism
 
         // 2. Adult selection - The fight for a place! Survival
         List<T> newPopulation = performAdultSelection(pool, generation);
@@ -387,13 +388,11 @@ public class Evolution<T extends Individual> {
         System.out.println("Crossover: " + crossover);
         System.out.println("Parent pool size: " + PARENT_POOL_SIZE);
         System.out.println("Children pool size: " + CHIlDREN_POOL_SIZE);
-        System.out.println("# of iterations: " + NUMBER_OF_ITERATIONS);
         System.out.println("Parent strategy: " + selectionsStrategy.name());
         System.out.println("Mating strategy: " + matingStrategy.name());
         System.out.println("Eliteism       : " + eliteism);
 
 
-        ready = true;
         return this;
     }
 
@@ -432,11 +431,6 @@ public class Evolution<T extends Individual> {
         this.CHIlDREN_POOL_SIZE = CHIlDREN_POOL_SIZE;
         return this;
 
-    }
-
-    public Evolution setNUMBER_OF_ITERATIONS(int NUMBER_OF_ITERATIONS) {
-        this.NUMBER_OF_ITERATIONS = NUMBER_OF_ITERATIONS;
-        return this;
     }
 
     public void setEliteism(int eliteism) {

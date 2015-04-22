@@ -1,11 +1,15 @@
 package project3;
 
+import algorithms.ea.Evolution;
+import algorithms.ea.adultselection.ParentSelections;
+import algorithms.ea.individual.operators.crossover.OneCrossover;
+import algorithms.ea.individual.operators.mutation.MaybeMutator;
+import algorithms.ea.mating.MatingTechniques;
 import algorithms.eann.Neuroevolution;
 import algorithms.eann.IndividualBrain;
 import gameworlds.flatland.Flatland;
 import gameworlds.flatland.Movement;
 import gameworlds.flatland.sensor.Sensed;
-import javafx.fxml.FXML;
 
 
 import java.util.*;
@@ -24,7 +28,7 @@ public class AIController {
     private List<IndividualBrain> population;
     private int populationSize = 100;
     private int epoch = 0;
-    private Neuroevolution neuroevolution;
+    private Evolution<IndividualBrain> evolution;
 
     // 1. Make a population
     // 2. Run population on game world
@@ -34,7 +38,15 @@ public class AIController {
     private Flatland currentScenario;
 
     public AIController() {
-        neuroevolution = new Neuroevolution();
+        evolution = new Evolution<>(IndividualBrain.class);
+        evolution = evolution
+                .setMatingStrategy(MatingTechniques.SIGMA_SCALING)
+                .setAdultSelectionsStrategy(ParentSelections.OVER_PRODUCTION)
+                .setMutation(new MaybeMutator(0.1))
+                .setCrossover(new OneCrossover())
+                .setCHIlDREN_POOL_SIZE(200)
+                .setPARENT_POOL_SIZE(110)
+                .build();
 
         // ----------------------------------
         // Create random population
@@ -126,7 +138,7 @@ public class AIController {
     public IndividualBrain runOneEpoch(){
 
         // Run population through EANN
-        population = neuroevolution.evolve(population, epoch++);
+        population = evolution.nextEpoch(population, epoch++);
 
         // Calculate the fitness
         calculateFitnessOnPopulation();

@@ -1,5 +1,10 @@
 package project4;
 
+import algorithms.ea.Evolution;
+import algorithms.ea.adultselection.ParentSelections;
+import algorithms.ea.individual.operators.crossover.OneCrossover;
+import algorithms.ea.individual.operators.mutation.MaybeMutator;
+import algorithms.ea.mating.MatingTechniques;
 import algorithms.ectrnn.IndividualCTRBrain;
 import algorithms.ectrnn.Neuroevolution;
 import gameworlds.tracker.Tracker;
@@ -16,7 +21,7 @@ public class AIController {
     private List<IndividualCTRBrain> population;
     private int populationSize = 100;
     private int epoch = 0;
-    private Neuroevolution neuroevolution;
+    private Evolution<IndividualCTRBrain> evolution;
 
     Tracker.GameType gameType = Tracker.GameType.NORMAL;
 
@@ -37,7 +42,15 @@ public class AIController {
         epoch = 0;
 
         tracker = new Tracker(gameType);
-        neuroevolution = new Neuroevolution();
+        evolution = new Evolution<>(IndividualCTRBrain.class);
+        evolution = evolution
+                .setMatingStrategy(MatingTechniques.SIGMA_SCALING)
+                .setAdultSelectionsStrategy(ParentSelections.OVER_PRODUCTION)
+                .setMutation(new MaybeMutator(0.1))
+                .setCrossover(new OneCrossover())
+                .setCHIlDREN_POOL_SIZE(200)
+                .setPARENT_POOL_SIZE(110)
+                .build();
 
         // ----------------------------------
         // Create random population
@@ -133,7 +146,7 @@ public class AIController {
     public IndividualCTRBrain runOneEpoch(){
 
         // Run population through EANN
-        population = neuroevolution.evolve(population, epoch++);
+        population = evolution.nextEpoch(population, epoch++);
 
         // Calculate the fitness
         calculateFitnessOnPopulation();
