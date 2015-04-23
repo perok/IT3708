@@ -277,6 +277,8 @@ public class FXMLTableViewController {
         XYChart.Series<Number, Number> seriesFittest = new XYChart.Series<>();
         seriesFittest.setName("Fittest");
 
+        lcAiStatistics.getData().clear();
+
         lcAiStatistics.getData().add(seriesMean);
         lcAiStatistics.getData().add(seriesSD);
         lcAiStatistics.getData().add(seriesFittest);
