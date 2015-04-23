@@ -184,7 +184,7 @@ public class CTRNeuralNet {
         String str = "{numberOfInputs: " + numInputs +  ", numOfOutputs: " + numOutputs + ", numHiddenLayers: " + numHiddenLayers + ", numOfNeuronsHiddenLayer: " + neuronsPerHiddenLayer + " }\n";
 
         for(NeuronLayer layer : neuronLayers) {
-            str += layer.toString();
+            str += layer.toString() + "\n";
         }
 
         return str + "\n\n";

@@ -156,7 +156,7 @@ public class Tracker {
 
     public double getStats(){
         if(gameType.equals(GameType.NOWRAP)){
-            return Math.max(positive - Math.pow(negative, 2), 0) / (double)createdPositiveTiles;
+            return (positive - 2 * negative) / (double)createdPositiveTiles;
         } else if (gameType.equals(GameType.NORMAL)){
             return Math.max(Math.pow(positive, 2) - Math.pow(negative, 2), 0) / (double)createdPositiveTiles;
         } else {
