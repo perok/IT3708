@@ -6,7 +6,7 @@ import java.util.Random;
 import java.util.stream.IntStream;
 
 /**
- * Created by PerØyvind on 13/04/2015.
+ * Created by Perï¿½yvind on 13/04/2015.
  */
 public class Neuron {
 
@@ -160,5 +160,8 @@ public class Neuron {
         return weights.get(numberOfEvolvableWeights - 1);
     }
 
+    public String toString() {
+        return weights.toString();
+    }
 
 }

@@ -179,4 +179,15 @@ public class CTRNeuralNet {
     private double activationFunction(Double netInput, double p) {
         return 1 / (1 + Math.exp( -netInput/p));
     }
+
+    public String toString() {
+        String str = "{numberOfInputs: " + numInputs +  ", numOfOutputs: " + numOutputs + ", numHiddenLayers: " + numHiddenLayers + ", numOfNeuronsHiddenLayer: " + neuronsPerHiddenLayer + " }\n";
+
+        for(NeuronLayer layer : neuronLayers) {
+            str += layer.toString();
+        }
+
+        return str + "\n\n";
+    }
+
 }

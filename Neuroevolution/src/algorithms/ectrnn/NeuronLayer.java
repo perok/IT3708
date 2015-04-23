@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 /**
- * Created by PerØyvind on 13/04/2015.
+ * Created by Perï¿½yvind on 13/04/2015.
  */
 public class NeuronLayer {
 
@@ -20,5 +20,9 @@ public class NeuronLayer {
 
     public List<Neuron> getNeurons(){
         return neurons;
+    }
+
+    public String toString() {
+        return neurons.toString();
     }
 }
