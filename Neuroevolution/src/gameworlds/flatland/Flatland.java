@@ -231,8 +231,11 @@ public class Flatland {
 
 
     public double getStats(){
-        return Math.max(foodEaten - Math.pow(poisonEaten, 2), 0) / (double) foodCreated;
-                //- ((currentTotalSteps - foodEaten)/(double)currentTotalSteps);
+        //return Math.max(foodEaten - Math.pow(poisonEaten, 2), 0) / (double) foodCreated
+        //        - ((currentTotalSteps - foodEaten)/(double)currentTotalSteps);
+
+        return Math.max(Math.pow(foodEaten, 2) - Math.pow(poisonEaten, 2), 0) / (double) foodCreated;
+        //return Math.max(Math.pow(foodEaten, 2) - poisonEaten, 0) / (double) foodCreated;
 
         //return (foodEaten - poisonEaten) / (double) currentTotalSteps;
     }

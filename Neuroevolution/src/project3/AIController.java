@@ -2,6 +2,7 @@ package project3;
 
 import algorithms.ea.Evolution;
 import algorithms.ea.adultselection.AdultSelection;
+import algorithms.ea.individual.Individual;
 import algorithms.ea.individual.operators.crossover.OneCrossover;
 import algorithms.ea.individual.operators.mutation.MaybeMutator;
 import algorithms.ea.mating.ParentSelection;
@@ -33,6 +34,8 @@ public class AIController {
     // 2. Run population on game world
     // 3. Collect fitness underway
 
+    FlatlandFitness flatlandFitness = new FlatlandFitness();
+
 
     private Flatland currentScenario;
 
@@ -45,6 +48,7 @@ public class AIController {
                 .setCrossover(new OneCrossover())
                 .setCHIlDREN_POOL_SIZE(200)
                 .setPARENT_POOL_SIZE(110)
+                .setFitness(flatlandFitness)
                 .build();
 
         // ----------------------------------
@@ -56,10 +60,11 @@ public class AIController {
 
         currentScenario = new Flatland(10, 1/3.0, 1/3.0);
 
-        calculateFitnessOnPopulation();
+        flatlandFitness.calculateFitness(population);
+        //calculateFitnessOnPopulation();
     }
 
-
+    @Deprecated
     private void calculateFitnessOnPopulation(){
         if(globalIsStatic)
             currentScenario = new Flatland(currentScenario);
@@ -140,7 +145,8 @@ public class AIController {
         population = evolution.nextEpoch(population, epoch++);
 
         // Calculate the fitness
-        calculateFitnessOnPopulation();
+        flatlandFitness.calculateFitness(population);
+        //calculateFitnessOnPopulation();
 
         return population.stream().max(IndividualBrain::compareTo).get();
     }
@@ -158,5 +164,48 @@ public class AIController {
 
     public int getEpoch() {
         return epoch;
+    }
+
+    private class FlatlandFitness implements IFitness<IndividualBrain> {
+
+        @Override
+        public List<IndividualBrain> calculateFitness(List<IndividualBrain> pop) {
+            if(globalIsStatic)
+                currentScenario = new Flatland(currentScenario);
+            else
+                currentScenario = new Flatland(10, 1/3.0, 1/3.0);
+
+            return pop.stream()
+                    // Make phenotypes - In case they have changed since evolution
+                    .peek(IndividualBrain::buildPhenotypes)
+                    .peek(IndividualBrain::rewireBrain)
+                    // ----------------------------------
+                    // Fitness function that run Flatland
+                    // ----------------------------------
+                    .peek(individualBrain -> {
+                        double totalFitness = 0;
+                        for (int x = 0; x < globalScenariosToRun; x++) {
+                            // Setup Flatland
+                            Flatland flatland = new Flatland(currentScenario);
+
+                            // Run Flatland with 60 iteration
+                            for (int i = 0; i < 60; i++) {
+                                Movement move = helperIndividualFindMove(flatland, individualBrain);
+
+                                // Perform the move
+                                flatland.move(move);
+                            }
+                            totalFitness += flatland.getStats();
+                        }
+
+                        // Record the fitness
+                        individualBrain.setFitness(totalFitness / globalScenariosToRun);
+                    })
+                    .collect(Collectors.toList());
+        }
+    }
+
+    public interface IFitness<T> {
+        List<IndividualBrain> calculateFitness(List<T> pop);
     }
 }

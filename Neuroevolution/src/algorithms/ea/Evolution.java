@@ -8,6 +8,7 @@ import algorithms.ea.individual.operators.crossover.ICrossover;
 import algorithms.ea.individual.operators.mutation.IMutation;
 import algorithms.ea.mating.ParentSelection;
 import math.Statistics;
+import project3.AIController;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -71,6 +72,7 @@ public class Evolution<T extends Individual> {
     private AdultSelection selectionsStrategy = AdultSelection.OVER_PRODUCTION;
     private ParentSelection matingStrategy = ParentSelection.FITNESS_PROPORTIONATE;
 
+    private AIController.IFitness fitness;
 
     int POOL_SIZE = 40;
 
@@ -341,9 +343,11 @@ public class Evolution<T extends Individual> {
 
         // 1. Parent selection - Who get to mate of the survivors
         // mating does parent selection then mates the results.
-        List<T> newChildren = performMating(population).stream()
+        List newChildren = performMating(population).stream()
                 .peek(individual -> individual.mutate(mutatation))
                 .collect(Collectors.toList());
+
+        newChildren = fitness.calculateFitness(newChildren);
 
         pool.addAll(newChildren);
 
@@ -436,5 +440,11 @@ public class Evolution<T extends Individual> {
 
     public int getEliteism() {
         return eliteism;
+    }
+
+    public Evolution<T> setFitness(AIController.IFitness fitness) {
+        this.fitness = fitness;
+
+        return this;
     }
 }
