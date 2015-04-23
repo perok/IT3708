@@ -66,7 +66,7 @@ public class IndividualCTRBrain extends Individual<Byte>{
     }
 
     public List<Double> think(List<Double> input){
-        System.out.println(brain);
+        //System.out.println(brain);
         return brain.update(input);
     }
 }
