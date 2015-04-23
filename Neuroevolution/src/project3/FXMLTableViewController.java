@@ -19,6 +19,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import math.linnalg.Vector2;
@@ -180,8 +181,20 @@ public class FXMLTableViewController {
                             if (simulationRunner != null)
                                 simulationRunner.stop();
 
+                            System.out.println("Starting last flatland for: " + rowData.getId());
+
                             simulationRunner = makeSimulationRunner(rowData, aiController.getCurrentScenario());
 
+                            simulationRunner.start();
+                        } else if(event.getButton() == MouseButton.SECONDARY) {
+                            IndividualBrain rowData = row.getItem();
+
+                            if (simulationRunner != null)
+                                simulationRunner.stop();
+
+                            Flatland randomFlatland = new Flatland(10, 1/3.0, 1/3.0);
+                            System.out.println("Starting random flatland for: " + rowData.getId());
+                            simulationRunner = makeSimulationRunner(rowData, randomFlatland);
                             simulationRunner.start();
                         }
                     });

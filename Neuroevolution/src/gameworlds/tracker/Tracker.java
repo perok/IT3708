@@ -1,7 +1,5 @@
 package gameworlds.tracker;
 
-import javafx.scene.paint.Color;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -18,8 +16,8 @@ public class Tracker {
 
     Random random;
 
-    int height = 30;
-    int width = 15;
+    int height = 15;
+    int width = 30;
 
     int tileLeftPos;
     int tileLength;
@@ -91,7 +89,7 @@ public class Tracker {
                 break;
             case PULLDOWN:
                 tileHeightPos = 1;
-                positive++;
+                //positive++;
                 break;
         }
 
@@ -138,8 +136,6 @@ public class Tracker {
 
             createNewTile();
         }
-
-
     }
 
     private void createNewTile() {
@@ -159,7 +155,15 @@ public class Tracker {
     }
 
     public double getStats(){
-        return Math.max(positive - Math.pow(negative, 2), 0) / (double)createdPositiveTiles;
+        if(gameType.equals(GameType.NOWRAP)){
+            return Math.max(positive - Math.pow(negative, 2), 0) / (double)createdPositiveTiles;
+        } else if (gameType.equals(GameType.NORMAL)){
+            return Math.max(Math.pow(positive, 2) - Math.pow(negative, 2), 0) / (double)createdPositiveTiles;
+        } else {
+            //System.out.println("Stats: " + Math.max(positive - Math.pow(negative, 2), 0) / (double)createdPositiveTiles);
+            //System.out.println("lol: " + positive + "  " + negative + " " + createdPositiveTiles);
+            return Math.max(Math.pow(positive, 2) - Math.pow(negative, 2), 0);// / (double)createdPositiveTiles; // - Math.pow(negative, 2)
+        }
     }
 
     public boolean isSmallTile() {

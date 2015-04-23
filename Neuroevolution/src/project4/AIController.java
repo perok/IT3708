@@ -98,7 +98,6 @@ public class AIController {
 
         // Find out what to do with output
         Map<Integer, Double> list = new HashMap<>();
-        //System.out.println("Val1: " + output.get(0) + " Val2: " + output.get(1));
 
         for(int i = 0; i < IndividualCTRBrain.outputLayers; i++) {
             list.put(i, output.get(i));
